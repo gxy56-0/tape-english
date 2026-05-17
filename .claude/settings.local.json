@@ -14,7 +14,12 @@
       "Bash(sed -i '888r wordbank_new.js' index.html)",
       "Bash(rm -rf \"C:/Users/12425/.git\")",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(grep -v -E '^\\(if|for|while|switch|return|typeof|console|Math|Number|String|Array|Object|JSON|parseInt|encodeURIComponent|setTimeout|clearTimeout|requestAnimationFrame|addEventListener|querySelectorAll|querySelector|getElementById|classList|localStorage|classList|stopPropagation|preventDefault|setProperty|textContent|innerHTML|style|push|forEach|find|map|join|slice|sort|round|floor|max|min|abs|random|replace|toLowerCase|toUpperCase|padStart|startsWith|split|from|of|new|in|catch|try|else|let|const|var|document|window|navigator\\)$')",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git commit *)"
     ]
   }
 }

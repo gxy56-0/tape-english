@@ -123,7 +123,7 @@ body::after {
 /* Category buttons in header */
 .cat-btn {
   padding: 6px 14px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
   font-size: 11px;
@@ -137,13 +137,12 @@ body::after {
 .cat-btn:hover {
   border-color: var(--neon-cyan);
   color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0,240,255,0.1);
 }
 .cat-btn.active {
   border-color: var(--neon-cyan);
   color: #fff;
-  background: rgba(0,240,255,0.1);
-  box-shadow: 0 0 12px rgba(0,240,255,0.12);
+  background: rgba(0,240,255,0.15);
+  box-shadow: 0 0 14px rgba(0,240,255,0.18);
 }
 
 /* Sound & icon buttons */
@@ -172,19 +171,20 @@ body::after {
 
 /* Sound preset selector */
 .sound-sel {
-  padding: 5px 8px;
+  padding: 5px 6px;
   border: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-muted);
+  background: var(--surface);
+  color: var(--text);
   font-size: 10px;
   font-family: var(--font-mono);
   cursor: pointer;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   outline: none;
-  transition: all 0.25s ease;
-  -webkit-appearance: none;
-  appearance: none;
+  border-radius: 0;
+}
+.sound-sel:focus {
+  border-color: var(--neon-cyan);
 }
 .sound-sel:hover {
   border-color: var(--neon-cyan);
@@ -361,10 +361,9 @@ body::after {
   padding: 0;
 }
 .stat-item {
-  flex: 1;
-  max-width: 160px;
+  flex: 1 0 0%;
   text-align: center;
-  padding: 14px 8px;
+  padding: 14px 4px;
   position: relative;
 }
 .stat-item + .stat-item {
