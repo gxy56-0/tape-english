@@ -120,31 +120,6 @@ body::after {
   gap: 8px;
 }
 
-/* Category buttons in header */
-.cat-btn {
-  padding: 6px 14px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  transition: all 0.25s ease;
-}
-.cat-btn:hover {
-  border-color: var(--neon-cyan);
-  color: var(--neon-cyan);
-}
-.cat-btn.active {
-  border-color: var(--neon-cyan);
-  color: #fff;
-  background: rgba(0,240,255,0.15);
-  box-shadow: 0 0 14px rgba(0,240,255,0.18);
-}
-
 /* Sound & icon buttons */
 .icon-btn {
   width: 36px;
@@ -169,35 +144,26 @@ body::after {
   text-decoration: line-through;
 }
 
-/* Sound preset buttons */
-.sp-btn {
-  width: 26px;
-  height: 26px;
-  padding: 0;
+/* Sound selector dropdown */
+.sound-sel {
+  padding: 5px 8px;
   border: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 10px;
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  outline: none;
+  border-radius: 0;
 }
-.sp-btn:hover {
+.sound-sel:hover,
+.sound-sel:focus {
   border-color: var(--neon-cyan);
   color: var(--neon-cyan);
 }
-.sp-btn.active {
-  border-color: var(--neon-cyan);
-  color: #fff;
-  background: rgba(0,240,255,0.15);
-}
-.sp-group {
-  display: flex;
-  gap: 2px;
-  align-items: center;
+.sound-sel option {
+  background: var(--surface);
+  color: var(--text);
 }
 
 /* ============================================================
@@ -839,7 +805,7 @@ body::after {
   .word-jyutping { font-size: 12px; }
   .word-frame { padding: 12px 20px; }
   .pronounce-btn { padding: 5px 12px; font-size: 11px; }
-  .sp-btn { width: 22px; height: 22px; font-size: 8px; }
+  .sound-sel { font-size: 9px; padding: 4px 6px; }
   .stat-value { font-size: 18px; }
   .stat-label { font-size: 9px; letter-spacing: 1px; }
   .stat-item { padding: 10px 4px; }
@@ -858,22 +824,20 @@ body::after {
 <header class="header">
   <div class="header-left">
     <span class="header-title">HK ENGLISH TYPING</span>
-    <span class="header-subtitle" id="categoryLabel">// all words</span>
+    <span class="header-subtitle" id="categoryLabel">// workplace</span>
   </div>
   <div class="header-right">
-    <button class="cat-btn active" data-category="all">All</button>
-    <button class="cat-btn" data-category="workplace">Workplace</button>
-    <button class="cat-btn" data-category="daily">Daily</button>
     <button class="icon-btn" id="btnSound" title="Toggle sound">S</button>
     <button class="icon-btn" id="btnWordList" title="Word list">W</button>
     <button class="icon-btn" id="btnTheme" title="Change theme">T</button>
-    <span class="sp-group" id="soundPresets" title="Key sound">
-      <button class="sp-btn active" data-sound="mechanical">M</button>
-      <button class="sp-btn" data-sound="membrane">Mb</button>
-      <button class="sp-btn" data-sound="typewriter">T</button>
-      <button class="sp-btn" data-sound="blue">B</button>
-      <button class="sp-btn" data-sound="thock">Th</button>
-    </span>
+    <select class="sound-sel" id="soundSelect">
+      <option value="" disabled selected>sound</option>
+      <option value="mechanical">mechanical</option>
+      <option value="membrane">membrane</option>
+      <option value="typewriter">typewriter</option>
+      <option value="blue">blue switch</option>
+      <option value="thock">thock</option>
+    </select>
   </div>
 </header>
 
@@ -1752,7 +1716,7 @@ const wordBank = {
 // STATE
 // ============================================================
 const state = {
-  currentCategory: "all",
+  currentCategory: "workplace",
   words: [],           // current word list
   wordIndex: 0,        // index in current list
   userInput: "",       // characters typed for current word
@@ -1781,7 +1745,6 @@ function cacheElements() {
     wordTranslation: document.getElementById("wordTranslation"),
     wordJyutping: document.getElementById("wordJyutping"),
     categoryLabel: document.getElementById("categoryLabel"),
-    categoryButtons: document.querySelectorAll(".cat-btn"),
     timeDisplay: document.getElementById("timeDisplay"),
     inputDisplay: document.getElementById("inputDisplay"),
     wpmDisplay: document.getElementById("wpmDisplay"),
@@ -2136,10 +2099,7 @@ function toggleSound() {
 }
 
 function getWordPool() {
-  if (state.currentCategory === "all") {
-    return [...wordBank.workplace, ...wordBank.daily];
-  }
-  return wordBank[state.currentCategory];
+  return wordBank.workplace;
 }
 
 // ============================================================
@@ -2410,23 +2370,6 @@ function handleKeydown(e) {
 }
 
 // ============================================================
-// CATEGORY SWITCHING
-// ============================================================
-function switchCategory(category) {
-  if (state.currentCategory === category) return;
-  state.currentCategory = category;
-
-  state.elements.categoryButtons.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.category === category);
-  });
-
-  const labels = { all: "// all words", workplace: "// workplace", daily: "// daily" };
-  state.elements.categoryLabel.textContent = labels[category] || "";
-
-  resetSession(false);
-}
-
-// ============================================================
 // WORD LIST PANEL
 // ============================================================
 let wordListSort = { field: "en", asc: true };
@@ -2447,7 +2390,7 @@ function renderWordList() {
   let rows = pool.map(w => {
     const key = w.en.toLowerCase();
     const stats = state.wordStats[key] || { attempts: 0, completed: 0 };
-    const cat = wordBank.workplace.includes(w) ? "Workplace" : "Daily";
+    const cat = "—";
     return { word: w, cat, attempts: stats.attempts, completed: stats.completed };
   });
 
@@ -2765,11 +2708,6 @@ function init() {
 }
 
 function finishInit() {
-  // Category buttons
-  state.elements.categoryButtons.forEach(btn => {
-    btn.addEventListener("click", () => switchCategory(btn.dataset.category));
-  });
-
   // Keyboard input
   document.addEventListener("keydown", e => {
     // Start session on any key press when not started
@@ -2855,24 +2793,18 @@ function finishInit() {
     cycleTheme();
   });
 
-  // Sound preset buttons
-  document.querySelectorAll(".sp-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      currentSoundPreset = btn.dataset.sound;
-      document.querySelectorAll(".sp-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      try { localStorage.setItem("typing_sound", currentSoundPreset); } catch (e) {}
-    });
+  // Sound selector
+  document.getElementById("soundSelect").addEventListener("change", (e) => {
+    e.stopPropagation();
+    currentSoundPreset = e.target.value;
+    try { localStorage.setItem("typing_sound", currentSoundPreset); } catch (e) {}
   });
   // Restore saved sound preference
   try {
     const savedSound = localStorage.getItem("typing_sound");
     if (savedSound && soundPresets[savedSound]) {
       currentSoundPreset = savedSound;
-      document.querySelectorAll(".sp-btn").forEach(b => {
-        b.classList.toggle("active", b.dataset.sound === savedSound);
-      });
+      document.getElementById("soundSelect").value = savedSound;
     }
   } catch (e) {}
 
