@@ -2775,9 +2775,10 @@ function finishInit() {
 
   // Focus
   state.elements.hiddenInput.focus();
-  document.addEventListener("click", () => {
-    // Don't steal focus when interacting with word list
+  document.addEventListener("click", (e) => {
+    // Don't steal focus when interacting with word list or sound select
     if (document.getElementById("wordlistOverlay").classList.contains("visible")) return;
+    if (e.target.closest && e.target.closest("#soundSelect")) return;
     state.elements.hiddenInput.focus();
   });
 
@@ -2848,9 +2849,10 @@ function finishInit() {
     });
   });
 
-  // Escape closes word list
+  // Escape closes word list (skip when interacting with form elements)
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (document.activeElement && document.activeElement.tagName === "SELECT") return;
       if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
         hideWordList();
         state.elements.hiddenInput.focus();
