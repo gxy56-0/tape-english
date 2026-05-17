@@ -260,6 +260,7 @@ body::after {
 .letter.correct { color: var(--neon-green); text-shadow: 0 0 8px rgba(0,255,136,0.5); }
 .letter.wrong { color: var(--neon-red); text-shadow: 0 0 8px rgba(255,51,102,0.5); }
 .letter.space { width: 0.45em; display: inline-block; }
+.letter.skip { color: var(--text-muted); opacity: 0.6; }
 
 /* Pronunciation buttons */
 .pronounce-row {
@@ -2019,16 +2020,24 @@ function recordCompletion(word) {
 }
 
 // ============================================================
-// SPACE-SKIPPING HELPERS
+// SKIP-SYMBOL HELPERS (spaces and hyphens are optional)
 // ============================================================
+function isSkipChar(c) {
+  return c === " " || c === "-";
+}
+
 function typableLength(word) {
-  return word.en.replace(/ /g, "").length;
+  let n = 0;
+  for (let i = 0; i < word.en.length; i++) {
+    if (!isSkipChar(word.en[i])) n++;
+  }
+  return n;
 }
 
 function nthNonSpace(word, n) {
   let count = 0;
   for (let i = 0; i < word.en.length; i++) {
-    if (word.en[i] !== " ") {
+    if (!isSkipChar(word.en[i])) {
       if (count === n) return i;
       count++;
     }
@@ -2039,7 +2048,7 @@ function nthNonSpace(word, n) {
 function nonSpaceCountBefore(word, wordIdx) {
   let count = 0;
   for (let i = 0; i < wordIdx; i++) {
-    if (word.en[i] !== " ") count++;
+    if (!isSkipChar(word.en[i])) count++;
   }
   return count;
 }
@@ -2120,7 +2129,10 @@ function renderWord() {
   for (let i = 0; i < word.en.length; i++) {
     const span = document.createElement("span");
     span.textContent = word.en[i];
-    span.className = word.en[i] === " " ? "letter space" : "letter normal";
+    const ch = word.en[i];
+    if (ch === " ") span.className = "letter space";
+    else if (ch === "-") span.className = "letter skip";
+    else span.className = "letter normal";
     span.dataset.index = i;
     display.appendChild(span);
   }
@@ -2136,11 +2148,15 @@ function updateLetterStates() {
 
   letters.forEach(span => {
     const wordIdx = Number(span.dataset.index);
-    span.classList.remove("normal", "correct", "wrong", "space");
+    span.classList.remove("normal", "correct", "wrong", "space", "skip");
 
-    // Spaces are always neutral — skip typing logic
+    // Spaces and hyphens are always neutral — skip typing logic
     if (word.en[wordIdx] === " ") {
       span.classList.add("space");
+      return;
+    }
+    if (word.en[wordIdx] === "-") {
+      span.classList.add("skip");
       return;
     }
 
@@ -2237,11 +2253,24 @@ function handleCorrectLetter() {
   playKeySound(true);
   flashFrame("correct");
 
-  // Check if word is complete (all non-space characters typed)
+  // Check if word is complete (spaces skipped, hyphens optional)
   const word = state.words[state.wordIndex];
-  if (state.userInput.length >= typableLength(word)) {
+  let wi = 0, ui = 0;
+  while (wi < word.en.length) {
+    if (word.en[wi] === " ") { wi++; continue; }
+    if (ui >= state.userInput.length) break;
+    if (word.en[wi] === "-" && state.userInput[ui] === "-") { wi++; ui++; continue; }
+    if (word.en[wi] === "-") { wi++; continue; }
+    if (state.userInput[ui].toLowerCase() !== word.en[wi].toLowerCase()) break;
+    wi++; ui++;
+  }
+  // Check if all non-space chars covered
+  let remaining = false;
+  for (let i = wi; i < word.en.length; i++) {
+    if (word.en[i] !== " ") { remaining = true; break; }
+  }
+  if (!remaining) {
     state.wordsCompleted++;
-    // Short pause then advance
     setTimeout(() => advanceWord(), 150);
   }
 }
@@ -2351,13 +2380,28 @@ function handleKeydown(e) {
   const word = state.words[state.wordIndex];
   if (!word) return;
 
-  // Don't accept more input than typable (non-space) characters
-  if (state.userInput.length >= typableLength(word)) return;
-
   state.totalInputs++;
   const userIdx = state.userInput.length;
   state.userInput += e.key;
   const wordIdx = nthNonSpace(word, userIdx);
+
+  // Hyphen matching: user can type "-" or skip it
+  if (e.key === "-") {
+    // Look for a hyphen between previous match and wordIdx
+    const prevIdx = userIdx > 0 ? nthNonSpace(word, userIdx - 1) : -1;
+    let found = false;
+    for (let i = prevIdx + 1; i <= wordIdx && i < word.en.length; i++) {
+      if (word.en[i] === "-") { found = true; break; }
+    }
+    if (found) {
+      handleCorrectLetter();
+    } else {
+      state.totalErrors++;
+      handleWrongInput();
+    }
+    updateStats();
+    return;
+  }
 
   if (e.key.toLowerCase() === word.en[wordIdx].toLowerCase()) {
     handleCorrectLetter();
