@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK English Typing Practice</title>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #08081a;
+  --surface: #10102a;
+  --surface-alt: #181840;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff00e5;
+  --neon-purple: #a855f7;
+  --neon-green: #00ff88;
+  --neon-red: #ff3366;
+  --neon-amber: #ffb800;
+  --text: #e0e0f0;
+  --text-muted: #7878a8;
+  --border-subtle: #252550;
+  --glass-bg: rgba(8,8,26,0.8);
+  --star-opacity: 1;
+  --scanline-opacity: 1;
+  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* === Starfield Background === */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 15% 85%, rgba(0,240,255,0.5), transparent),
+    radial-gradient(1px 1px at 75% 80%, rgba(255,0,229,0.4), transparent),
+    radial-gradient(1px 1px at 5% 40%, rgba(168,85,247,0.4), transparent),
+    radial-gradient(1px 1px at 95% 65%, rgba(0,240,255,0.3), transparent);
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--star-opacity);
+  animation: starPulse 4s ease-in-out infinite alternate;
+}
+@keyframes starPulse {
+  0% { filter: brightness(0.6); }
+  100% { filter: brightness(1); }
+}
+
+/* === Scanline overlay === */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 999;
+  opacity: var(--scanline-opacity);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  z-index: 10;
+  position: relative;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 8px var(--neon-cyan);
+  white-space: nowrap;
+}
+.header-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Category buttons in header */
+.cat-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+}
+.cat-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,240,255,0.1);
+}
+.cat-btn.active {
+  border-color: var(--neon-cyan);
+  color: #fff;
+  background: rgba(0,240,255,0.1);
+  box-shadow: 0 0 12px rgba(0,240,255,0.12);
+}
+
+/* Sound & icon buttons */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 15px;
+  font-family: var(--font-mono);
+  transition: all 0.25s ease;
+}
+.icon-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+.icon-btn.muted {
+  color: var(--neon-red);
+  text-decoration: line-through;
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+}
+
+/* === Word Display === */
+.word-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+/* Translation / hint above word */
+.word-translation {
+  font-size: 26px;
+  color: #d0d0f0;
+  font-weight: 600;
+  min-height: 36px;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  text-align: center;
+}
+.word-jyutping {
+  font-size: 14px;
+  color: var(--neon-purple);
+  font-family: var(--font-mono);
+  min-height: 20px;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* The word itself */
+.word-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  font-family: var(--font-mono);
+  letter-spacing: 4px;
+  line-height: 1.2;
+  transition: transform 0.15s ease;
+  user-select: none;
+}
+.word-display.shake {
+  animation: shake 0.4s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+
+/* Individual letters */
+.letter {
+  display: inline;
+  transition: color 0.1s ease;
+}
+.letter.normal { color: var(--text-muted); }
+.letter.correct { color: var(--neon-green); text-shadow: 0 0 8px rgba(0,255,136,0.5); }
+.letter.wrong { color: var(--neon-red); text-shadow: 0 0 8px rgba(255,51,102,0.5); }
+.letter.space { width: 0.45em; display: inline-block; }
+
+/* Pronunciation buttons */
+.pronounce-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.pronounce-btn {
+  padding: 6px 18px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  transition: all 0.25s ease;
+}
+.pronounce-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,240,255,0.1);
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-wrap {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 32px;
+}
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+  transition: width 0.3s ease;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0,240,255,0.3);
+}
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   STATS BAR (bottom)
+   ============================================================ */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  padding: 0;
+}
+.stat-item {
+  flex: 1;
+  max-width: 160px;
+  text-align: center;
+  padding: 14px 8px;
+  position: relative;
+}
+.stat-item + .stat-item {
+  border-left: 1px solid var(--border-subtle);
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.stat-item:nth-child(1) .stat-value { color: var(--neon-cyan); text-shadow: 0 0 6px rgba(0,240,255,0.3); }
+.stat-item:nth-child(2) .stat-value { color: var(--neon-magenta); text-shadow: 0 0 6px rgba(255,0,229,0.3); }
+.stat-item:nth-child(3) .stat-value { color: var(--neon-amber); text-shadow: 0 0 6px rgba(255,184,0,0.3); }
+.stat-item:nth-child(4) .stat-value { color: var(--neon-green); text-shadow: 0 0 6px rgba(0,255,136,0.3); }
+.stat-item:nth-child(5) .stat-value { color: var(--neon-purple); text-shadow: 0 0 6px rgba(168,85,247,0.3); }
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   COUNT SELECTOR OVERLAY
+   ============================================================ */
+.count-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 150;
+  transition: opacity 0.35s ease;
+  padding: 20px;
+}
+.count-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.count-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 40px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.count-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+.count-card .count-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: 28px;
+}
+.count-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.count-opt {
+  padding: 14px 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  transition: all 0.25s ease;
+}
+.count-opt:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 14px rgba(0,240,255,0.1);
+}
+.count-opt.active {
+  border-color: var(--neon-cyan);
+  background: rgba(0,240,255,0.08);
+  color: var(--neon-cyan);
+}
+.count-confirm {
+  margin-top: 24px;
+  padding: 12px 40px;
+  border: 1px solid var(--neon-cyan);
+  background: rgba(0,240,255,0.08);
+  color: var(--neon-cyan);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+}
+.count-confirm:hover {
+  background: rgba(0,240,255,0.2);
+  box-shadow: 0 0 20px rgba(0,240,255,0.2);
+}
+.count-custom-wrap {
+  margin-bottom: 16px;
+}
+.count-custom-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg);
+  color: var(--neon-cyan);
+  font-size: 20px;
+  font-family: var(--font-mono);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.25s;
+}
+.count-custom-input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0,240,255,0.15);
+}
+.theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.theme-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+.theme-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+.theme-dot:hover {
+  transform: scale(1.2);
+}
+.theme-dot.active {
+  border-color: #fff;
+  box-shadow: 0 0 10px currentColor;
+}
+.theme-dot-picker {
+  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red) !important;
+  overflow: hidden;
+}
+.theme-dot-picker input[type="color"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+}
+
+/* ============================================================
+   START OVERLAY
+   ============================================================ */
+.start-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 0.4s ease;
+}
+.start-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.start-hint {
+  font-size: 22px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+  animation: hintPulse 2s ease-in-out infinite;
+  text-align: center;
+}
+.start-hint span {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ============================================================
+   RESULT OVERLAY
+   ============================================================ */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 200;
+  padding: 20px;
+}
+.result-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 0;
+  transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.result-overlay.visible .result-card { transform: scale(1); }
+
+.result-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--neon-cyan), transparent 40%, transparent 60%, var(--neon-magenta));
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.result-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-bottom: 24px;
+}
+.result-stat .rs-val {
+  font-size: 44px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  line-height: 1.1;
+}
+.result-stat:nth-child(1) .rs-val { color: var(--neon-cyan); }
+.result-stat:nth-child(2) .rs-val { color: var(--neon-magenta); }
+.result-stat .rs-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+
+.result-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-bottom: 32px;
+  background: var(--border-subtle);
+}
+.result-detail-grid > div {
+  background: var(--bg);
+  padding: 14px 8px;
+}
+.result-detail-grid .rd-val {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.result-detail-grid .rd-lbl {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+}
+
+.result-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.btn {
+  padding: 12px 28px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.25s ease;
+}
+.btn-primary {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0,240,255,0.1);
+}
+.btn-primary:hover {
+  background: rgba(0,240,255,0.1);
+  box-shadow: 0 0 24px rgba(0,240,255,0.25);
+}
+.btn-secondary:hover {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+  box-shadow: 0 0 16px rgba(255,0,229,0.1);
+}
+
+
+/* ============================================================
+   WORD LIST OVERLAY
+   ============================================================ */
+.wordlist-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 300;
+  padding: 20px;
+}
+.wordlist-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.wordlist-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 32px 28px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+.wordlist-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  text-align: center;
+}
+.wordlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+.wordlist-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--neon-purple);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.wordlist-table th:hover {
+  color: var(--neon-cyan);
+}
+.wordlist-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(37,37,80,0.4);
+  color: var(--text);
+}
+.wordlist-table tr:hover td {
+  background: rgba(0,240,255,0.04);
+}
+.wordlist-table .wl-zh {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.wordlist-table .wl-count {
+  text-align: center;
+  color: var(--neon-amber);
+}
+.wordlist-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  font-family: var(--font-mono);
+  transition: color 0.2s;
+}
+.wordlist-close:hover {
+  color: var(--neon-red);
+}
+.wordlist-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+/* ============================================================
+   HIDDEN INPUT
+   ============================================================ */
+.hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .header {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .header-title { font-size: 13px; }
+  .word-display { font-size: 32px; letter-spacing: 2px; }
+  .word-translation { font-size: 13px; }
+  .stat-value { font-size: 18px; }
+  .stat-label { font-size: 9px; letter-spacing: 1px; }
+  .stat-item { padding: 10px 4px; }
+  .result-card { padding: 28px 18px; }
+  .result-stats { gap: 20px; }
+  .result-stat .rs-val { font-size: 32px; }
+  .result-detail-grid { grid-template-columns: 1fr; }
+  .result-buttons { flex-direction: column; }
+  .start-hint { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <span class="header-title">HK ENGLISH TYPING</span>
+    <span class="header-subtitle" id="categoryLabel">// all words</span>
+  </div>
+  <div class="header-right">
+    <button class="cat-btn active" data-category="all">All</button>
+    <button class="cat-btn" data-category="workplace">Workplace</button>
+    <button class="cat-btn" data-category="daily">Daily</button>
+    <button class="icon-btn" id="btnSound" title="Toggle sound">S</button>
+    <button class="icon-btn" id="btnWordList" title="Word list">W</button>
+    <button class="icon-btn" id="btnTheme" title="Change theme">T</button>
+  </div>
+</header>
+
+<!-- Main Area -->
+<main class="main">
+  <div class="word-container">
+    <div class="word-translation" id="wordTranslation"></div>
+    <div class="word-jyutping" id="wordJyutping"></div>
+    <div class="word-display" id="wordDisplay"></div>
+  </div>
+
+  <div class="pronounce-row">
+    <button class="pronounce-btn" id="btnPronounceEn">EN</button>
+    <button class="pronounce-btn" id="btnPronounceYue">粤</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-text">
+      <span id="progressCurrent">0</span>
+      <span id="progressTotal">0</span>
+    </div>
+  </div>
+</main>
+
+<!-- Stats Bar -->
+<footer class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-value" id="timeDisplay">00:00</div>
+    <div class="stat-label">Time</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value" id="inputDisplay">0</div>
+    <div class="stat-label">Inputs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value" id="wpmDisplay">0</div>
+    <div class="stat-label">WPM</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value" id="correctDisplay">0</div>
+    <div class="stat-label">Correct</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value" id="accuracyDisplay">100%</div>
+    <div class="stat-label">Accuracy</div>
+  </div>
+</footer>
+
+<!-- Count Selector Overlay -->
+<div class="count-overlay" id="countOverlay">
+  <div class="count-card">
+    <h2>// Words Today</h2>
+    <div class="count-subtitle">Total: <span id="countTotal">0</span> words available</div>
+    <div class="count-options" id="countOptions">
+      <button class="count-opt" data-count="10">10</button>
+      <button class="count-opt active" data-count="30">30</button>
+      <button class="count-opt" data-count="50">50</button>
+      <button class="count-opt" data-count="-1">Custom</button>
+    </div>
+    <div class="count-custom-wrap" id="countCustomWrap" style="display:none">
+      <input type="number" class="count-custom-input" id="countCustomInput" min="1" placeholder="Enter number" />
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">Theme</span>
+      <button class="theme-dot active" data-theme="classic" style="background:#00f0ff;color:#00f0ff" title="经典"></button>
+      <button class="theme-dot" data-theme="ink" style="background:#2c2c2c;color:#2c2c2c" title="素黑"></button>
+      <button class="theme-dot" data-theme="white" style="background:#3b6fb6;color:#3b6fb6" title="纯白"></button>
+      <button class="theme-dot" data-theme="apricot" style="background:#e07b5a;color:#e07b5a" title="暖杏"></button>
+      <button class="theme-dot" data-theme="mint" style="background:#4a9a8a;color:#4a9a8a" title="薄荷"></button>
+      <button class="theme-dot" data-theme="mist" style="background:#5a8ab8;color:#5a8ab8" title="雾蓝"></button>
+      <button class="theme-dot theme-dot-picker" id="themeCustomDot" title="Pick your color">
+        <input type="color" id="themeColorPicker" value="#00f0ff">
+      </button>
+    </div>
+    <button class="count-confirm" id="btnCountConfirm">Start</button>
+  </div>
+</div>
+
+<!-- Start Overlay -->
+<div class="start-overlay" id="startOverlay">
+  <div class="start-hint">Press any <span>key</span> to start</div>
+</div>
+
+<!-- Hidden input -->
+<input type="text" class="hidden-input" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+<!-- Result Overlay -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card">
+    <h2>// Complete</h2>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="rs-val" id="resultWpm">0</div>
+        <div class="rs-lbl">WPM</div>
+      </div>
+      <div class="result-stat">
+        <div class="rs-val" id="resultAccuracy">100%</div>
+        <div class="rs-lbl">Accuracy</div>
+      </div>
+    </div>
+    <div class="result-detail-grid">
+      <div>
+        <div class="rd-val" id="resultTime">00:00</div>
+        <div class="rd-lbl">Time</div>
+      </div>
+      <div>
+        <div class="rd-val" id="resultWords">0</div>
+        <div class="rd-lbl">Words</div>
+      </div>
+      <div>
+        <div class="rd-val" id="resultErrors">0</div>
+        <div class="rd-lbl">Errors</div>
+      </div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="btnRetry">Retry</button>
+      <button class="btn btn-secondary" id="btnNewSet">New Words</button>
+    </div>
+  </div>
+</div>
+
+<!-- Word List Overlay -->
+<div class="wordlist-overlay" id="wordlistOverlay">
+  <div class="wordlist-card">
+    <button class="wordlist-close" id="btnWordlistClose">X</button>
+    <h2>// All Words</h2>
+    <table class="wordlist-table">
+      <thead>
+        <tr>
+          <th data-sort="en">Word</th>
+          <th data-sort="zh">Translation</th>
+          <th data-sort="cat">Category</th>
+          <th data-sort="attempts">Attempts</th>
+          <th data-sort="completed">Completed</th>
+        </tr>
+      </thead>
+      <tbody id="wordlistBody"></tbody>
+    </table>
+    <div class="wordlist-empty" id="wordlistEmpty">No data yet. Start typing to collect stats.</div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// WORD BANK - HK English vocabulary with translations
+// ============================================================
+const wordBank = {
+  workplace: [
+    { en: "revert", zh: "回复", jyut: "wui4 fuk1" },
+    { en: "perusal", zh: "审阅 细读", jyut: "sam2 jyut6 sai3 duk6" },
+    { en: "stakeholder", zh: "持份者", jyut: "ci4 fan6 ze2" },
+    { en: "deadline", zh: "截止日期", jyut: "zit6 zi2 jat6 kei4" },
+    { en: "quarterly", zh: "每季度", jyut: "mui5 gwai3 dou6" },
+    { en: "reimbursement", zh: "报销", jyut: "bou3 siu1" },
+    { en: "logistics", zh: "物流", jyut: "mat6 lau4" },
+    { en: "proposal", zh: "建议书", jyut: "gin3 ji5 syu1" },
+    { en: "budget", zh: "预算", jyut: "jyu6 syun3" },
+    { en: "conference", zh: "会议", jyut: "wui6 ji5" },
+    { en: "presentation", zh: "简报", jyut: "gaan2 bou3" },
+    { en: "vendor", zh: "供应商", jyut: "gung1 jing3 soeng1" },
+    { en: "department", zh: "部门", jyut: "bou6 mun4" },
+    { en: "guidelines", zh: "指引", jyut: "zi2 jan5" },
+    { en: "appraisal", zh: "评估", jyut: "ping4 gu2" },
+    { en: "consolidate", zh: "整合", jyut: "zing2 hap6" },
+    { en: "coordinate", zh: "协调", jyut: "hip3 tiu4" },
+    { en: "facilitate", zh: "推动", jyut: "teoi1 dung6" },
+    { en: "implement", zh: "执行", jyut: "zap1 hang4" },
+    { en: "delegate", zh: "授权", jyut: "sau6 kyun4" },
+    { en: "negotiate", zh: "谈判", jyut: "taam4 pun3" },
+    { en: "prioritize", zh: "优先处理", jyut: "jau1 sin1 cyu2 lei5" },
+    { en: "agenda", zh: "议程", jyut: "ji5 cing4" },
+    { en: "itinerary", zh: "行程", jyut: "hang4 cing4" },
+    { en: "invoice", zh: "发票", jyut: "faat3 piu3" },
+    { en: "procurement", zh: "采购", jyut: "coi2 kau3" },
+    { en: "liaison", zh: "联络人", jyut: "lyun4 lok3 jan4" },
+    { en: "colleague", zh: "同事", jyut: "tung4 si6" },
+    { en: "schedule", zh: "日程", jyut: "jat6 cing4" },
+    { en: "campaign", zh: "宣传活动", jyut: "syun1 cyun4 wut6 dung6" },
+    { en: "benchmark", zh: "基准", jyut: "gei1 zeon2" },
+    { en: "turnover", zh: "营业额", jyut: "jing4 jip6 ngaak6" },
+    { en: "redundancy", zh: "裁员", jyut: "coi4 jyun4" },
+    { en: "probation", zh: "试用期", jyut: "si3 jung6 kei4" },
+    { en: "remuneration", zh: "薪酬", jyut: "san1 caau4" },
+    { en: "mandate", zh: "授权 委托", jyut: "sau6 kyun4 wai2 tok3" },
+    { en: "feasibility", zh: "可行性", jyut: "ho2 hang4 sing3" },
+    { en: "incentive", zh: "激励", jyut: "gik1 lai6" },
+    { en: "disclaimer", zh: "免责声明", jyut: "min5 zaak3 sing1 ming4" },
+    { en: "compliance", zh: "合规", jyut: "hap6 kwai1" },
+    { en: "arbitration", zh: "仲裁", jyut: "zung6 coi4" },
+    { en: "memorandum", zh: "备忘录", jyut: "bei6 mong4 luk6" },
+    { en: "allocation", zh: "分配", jyut: "fan1 pui3" },
+    { en: "depreciation", zh: "折旧", jyut: "zit3 gau6" },
+    { en: "acquisition", zh: "收购", jyut: "sau1 kau3" },
+    { en: "subsidiary", zh: "子公司", jyut: "zi2 gung1 si1" },
+    { en: "inventory", zh: "库存", jyut: "fu3 cyun4" },
+    { en: "payroll", zh: "工资单", jyut: "gung1 zi1 daan1" },
+    { en: "franchise", zh: "特许经营", jyut: "dak6 heoi2 ging1 jing4" },
+    { en: "dividend", zh: "股息", jyut: "gu2 sik1" },
+    { en: "expenditure", zh: "支出", jyut: "zi1 ceot1" },
+    { en: "liquidation", zh: "清算", jyut: "cing1 syun3" },
+    { en: "retrenchment", zh: "紧缩", jyut: "gan2 suk1" },
+    { en: "promotion", zh: "升职", jyut: "sing1 zik1" },
+    { en: "interview", zh: "面试", jyut: "min6 si5" },
+    { en: "orientation", zh: "入职培训", jyut: "jap6 zik1 pui4 fan3" },
+    { en: "certification", zh: "认证", jyut: "jing6 zing3" },
+    { en: "infrastructure", zh: "基础设施", jyut: "gei1 co2 cit3 si1" },
+    { en: "analytics", zh: "数据分析", jyut: "sou3 geoi3 fan1 sik1" },
+    { en: "database", zh: "数据库", jyut: "sou3 geoi3 fu3" },
+    { en: "bandwidth", zh: "带宽", jyut: "daai3 fun1" },
+    { en: "server", zh: "服务器", jyut: "fuk6 mou6 hei3" },
+    { en: "protocol", zh: "协议", jyut: "hip3 ji5" },
+    { en: "encryption", zh: "加密", jyut: "gaa1 mat6" },
+    { en: "algorithm", zh: "算法", jyut: "syun3 faat3" },
+    { en: "interface", zh: "界面", jyut: "gaai3 min6" },
+    { en: "deployment", zh: "部署", jyut: "bou6 cyu5" },
+    { en: "maintenance", zh: "维护", jyut: "wai4 wu6" },
+    { en: "outsourcing", zh: "外判", jyut: "ngoi6 pun3" },
+    { en: "tender", zh: "投标", jyut: "tau4 biu1" },
+    { en: "contractor", zh: "承办商", jyut: "sing4 baan6 soeng1" },
+    { en: "specification", zh: "规格", jyut: "kwai1 gaak3" },
+    { en: "warranty", zh: "保修", jyut: "bou2 sau1" },
+    { en: "inspection", zh: "检查", jyut: "gim2 caa4" },
+    { en: "audit", zh: "审计", jyut: "sam2 gai3" },
+    { en: "ledger", zh: "账簿", jyut: "zoeng3 bou6" },
+    { en: "equity", zh: "股权", jyut: "gu2 kyun4" },
+    { en: "liability", zh: "负债", jyut: "fu6 zaai3" },
+    { en: "portfolio", zh: "投资组合", jyut: "tau4 zi1 zou2 hap6" },
+    { en: "mortgage", zh: "按揭", jyut: "on3 kit3" },
+    { en: "securities", zh: "证券", jyut: "zing3 hyun3" },
+    { en: "commodity", zh: "商品", jyut: "soeng1 ban2" },
+    { en: "arbitrage", zh: "套利", jyut: "tou3 lei6" },
+    { en: "insolvency", zh: "破产", jyut: "po3 caan2" },
+    { en: "tariff", zh: "关税", jyut: "gwaan1 seoi3" },
+    { en: "embargo", zh: "禁运", jyut: "gam3 wan6" },
+    { en: "logistics hub", zh: "物流枢纽", jyut: "mat6 lau4 syu1 nau2" },
+    { en: "free port", zh: "自由港", jyut: "zi6 jau4 gong2" },
+    { en: "subcontract", zh: "分包", jyut: "fan1 baau1" },
+    { en: "briefing", zh: "简报会", jyut: "gaan2 bou3 wui6" },
+    { en: "minutes", zh: "会议记录", jyut: "wui6 ji5 gei3 luk6" },
+    { en: "resolution", zh: "决议", jyut: "kyut3 ji5" },
+    { en: "adjournment", zh: "休会", jyut: "jau1 wui6" },
+    { en: "quorum", zh: "法定人数", jyut: "faat3 ding6 jan4 sou3" },
+    { en: "directorship", zh: "董事职位", jyut: "dung2 si6 zik1 wai6" },
+    { en: "tenure", zh: "任期", jyut: "jam6 kei4" },
+    { en: "sabbatical", zh: "休假", jyut: "jau1 gaa3" },
+    { en: "overtime", zh: "加班", jyut: "gaa1 baan1" },
+    { en: "commute", zh: "通勤", jyut: "tung1 kan4" },
+    { en: "telecommuting", zh: "远程办公", jyut: "jyun5 cing4 baan6 gung1" },
+    { en: "cubicle", zh: "办公隔间", jyut: "baan6 gung1 gaak3 gaan1" },
+    { en: "stationery", zh: "文具", jyut: "man4 geoi6" },
+    { en: "photocopier", zh: "复印机", jyut: "fuk1 jan3 gei1" },
+    { en: "watermark", zh: "水印", jyut: "seoi2 jan3" },
+    { en: "notarization", zh: "公证", jyut: "gung1 zing3" },
+    { en: "power of attorney", zh: "授权书", jyut: "sau6 kyun4 syu1" },
+    { en: "jurisdiction", zh: "司法管辖权", jyut: "si1 faat3 gun2 hat6 kyun4" },
+    { en: "intellectual property", zh: "知识产权", jyut: "zi1 sik1 caan2 kyun4" },
+    { en: "trademark", zh: "商标", jyut: "soeng1 biu1" },
+    { en: "patent", zh: "专利", jyut: "zyun1 lei6" },
+    { en: "copyright", zh: "版权", jyut: "baan2 kyun4" },
+    { en: "whistleblower", zh: "举报人", jyut: "geoi2 bou3 jan4" },
+    { en: "grievance", zh: "申诉", jyut: "san1 sou3" },
+    { en: "mediation", zh: "调解", jyut: "tiu4 gaai2" },
+    { en: "severance", zh: "遣散费", jyut: "hin2 saan3 fai3" },
+    { en: "recruitment", zh: "招聘", jyut: "ziu1 ping3" },
+    { en: "onboarding", zh: "入职", jyut: "jap6 zik1" },
+    { en: "upskilling", zh: "技能提升", jyut: "gei6 nang4 tai4 sing1" },
+    { en: "networking", zh: "人际网络", jyut: "jan4 zai3 mong5 lok3" },
+    { en: "mentorship", zh: "导师制", jyut: "dou6 si1 zai3" },
+    { en: "internship", zh: "实习", jyut: "sat6 zaap6" },
+    { en: "apprenticeship", zh: "学徒制", jyut: "hok6 tou4 zai3" },
+    { en: "freelance", zh: "自由职业", jyut: "zi6 jau4 zik1 jip6" },
+    { en: "startup", zh: "初创企业", jyut: "cong1 cong3 kei5 jip6" },
+    { en: "incubator", zh: "孵化器", jyut: "fu1 faa3 hei3" },
+    { en: "accelerator", zh: "加速器", jyut: "gaa1 cuk1 hei3" },
+    { en: "pitching", zh: "推介", jyut: "teoi1 gaai3" },
+    { en: "venture capital", zh: "风险投资", jyut: "fung1 him2 tau4 zi1" },
+    { en: "angel investor", zh: "天使投资者", jyut: "tin1 si5 tau4 zi1 ze2" },
+    { en: "valuation", zh: "估值", jyut: "gu2 zik6" },
+    { en: "merger", zh: "合并", jyut: "hap6 bing3" },
+    { en: "due diligence", zh: "尽职调查", jyut: "zeon6 zik1 diu6 caa4" },
+    { en: "white paper", zh: "白皮书", jyut: "baak6 pei4 syu1" },
+    { en: "memorandum of understanding", zh: "谅解备忘录", jyut: "loeng6 gaai2 bei6 mong4 luk6" },
+    { en: "key performance indicator", zh: "关键绩效指标", jyut: "gwaan1 gin6 zik1 haau6 zi2 biu1" },
+    { en: "return on investment", zh: "投资回报", jyut: "tau4 zi1 wui4 bou3" },
+    { en: "market share", zh: "市场份额", jyut: "si5 coeng4 fan6 ngaak6" },
+    { en: "competitor", zh: "竞争对手", jyut: "ging3 zang1 deoi3 sau2" },
+    { en: "monopoly", zh: "垄断", jyut: "lung5 dyun6" },
+    { en: "oligopoly", zh: "寡头垄断", jyut: "gwaa2 tau4 lung5 dyun6" },
+    { en: "deregulation", zh: "放宽管制", jyut: "fong3 fun1 gun2 zai3" },
+    { en: "privatization", zh: "私有化", jyut: "si1 jau5 faa3" },
+    { en: "nationalization", zh: "国有化", jyut: "gwok3 jau5 faa3" },
+    { en: "subsidy", zh: "补贴", jyut: "bou2 tip3" },
+    { en: "levy", zh: "征费", jyut: "zing1 fai3" },
+    { en: "stamp duty", zh: "印花税", jyut: "jan3 faa1 seoi3" },
+    { en: "tax exemption", zh: "免税", jyut: "min5 seoi3" },
+    { en: "offshore", zh: "离岸", jyut: "lei4 ngon6" },
+    { en: "holding company", zh: "控股公司", jyut: "hung3 gu2 gung1 si1" },
+    { en: "conglomerate", zh: "企业集团", jyut: "kei5 jip6 zaap6 tyun4" },
+    { en: "annual report", zh: "年报", jyut: "nin4 bou3" },
+    { en: "board of directors", zh: "董事会", jyut: "dung2 si6 wui6" },
+    { en: "chairperson", zh: "主席", jyut: "zyu2 zik6" },
+    { en: "chief executive", zh: "行政总裁", jyut: "hang4 zing3 zung2 coi4" },
+    { en: "human resources", zh: "人力资源", jyut: "jan4 lik6 zi1 jyun4" },
+    { en: "research and development", zh: "研发", jyut: "jin4 faat3" },
+    { en: "quality assurance", zh: "品质保证", jyut: "ban2 zat1 bou2 zing3" },
+    { en: "customer service", zh: "客户服务", jyut: "haak3 wu6 fuk6 mou6" },
+    { en: "public relations", zh: "公关", jyut: "gung1 gwaan1" },
+    { en: "supply chain", zh: "供应链", jyut: "gung1 jing3 lin6" },
+    { en: "wholesale", zh: "批发", jyut: "pai1 faat3" },
+    { en: "retail", zh: "零售", jyut: "ling4 sau3" },
+    { en: "e-commerce", zh: "电子商务", jyut: "din6 zi2 soeng1 mou6" },
+    { en: "brick and mortar", zh: "实体店", jyut: "sat6 tai2 dim3" },
+    { en: "fiscal year", zh: "财政年度", jyut: "coi4 zing3 nin4 dou6" },
+    { en: "balance sheet", zh: "资产负债表", jyut: "zi1 caan2 fu6 zaai3 biu2" },
+    { en: "profit and loss", zh: "损益", jyut: "syun2 jik1" },
+    { en: "cash flow", zh: "现金流", jyut: "gam1 cin4 lau4" },
+    { en: "break even", zh: "收支平衡", jyut: "sau1 zi1 ping4 hang4" },
+    { en: "overhead", zh: "经常开支", jyut: "ging1 soeng4 hoi1 zi1" },
+    { en: "working capital", zh: "营运资金", jyut: "jing4 wan6 zi1 gam1" },
+    { en: "letter of credit", zh: "信用证", jyut: "seon3 jung6 zing3" },
+    { en: "remittance", zh: "汇款", jyut: "wui6 fun2" },
+    { en: "exchange rate", zh: "汇率", jyut: "wui6 leot6" },
+    { en: "hedging", zh: "对冲", jyut: "deoi3 cung1" },
+    { en: "bull market", zh: "牛市", jyut: "ngau4 si5" },
+    { en: "bear market", zh: "熊市", jyut: "hung4 si5" },
+    { en: "volatility", zh: "波动", jyut: "bo1 dung6" },
+    { en: "diversification", zh: "多元化", jyut: "do1 jyun4 faa3" },
+    { en: "blue chip", zh: "蓝筹股", jyut: "laam4 cau4 gu2" },
+    { en: "initial public offering", zh: "首次公开招股", jyut: "sau2 ci3 gung1 hoi1 ziu1 gu2" },
+    { en: "delisting", zh: "除牌", jyut: "ceoi4 paai4" },
+    { en: "suspension", zh: "停牌", jyut: "ting4 paai4" },
+    { en: "insider trading", zh: "内幕交易", jyut: "noi6 mok6 gaau1 jik6" },
+    { en: "money laundering", zh: "洗钱", jyut: "sai2 cin4" },
+    { en: "corruption", zh: "贪污", jyut: "taam1 wu1" },
+    { en: "bribery", zh: "贿赂", jyut: "kui2 lok6" },
+    { en: "whistleblowing", zh: "举报", jyut: "geoi2 bou3" },
+    { en: "ombudsman", zh: "申诉专员", jyut: "san1 sou3 zyun1 jyun4" },
+    { en: "regulatory", zh: "监管", jyut: "gaam1 gun2" },
+    { en: "statutory", zh: "法定", jyut: "faat3 ding6" },
+    { en: "disclosure", zh: "披露", jyut: "pei1 lou6" },
+    { en: "confidentiality", zh: "保密", jyut: "bou2 mat6" },
+    { en: "non-disclosure agreement", zh: "保密协议", jyut: "bou2 mat6 hip3 ji5" },
+    { en: "collaboration", zh: "协作", jyut: "hip3 zok3" },
+    { en: "synergy", zh: "协同效应", jyut: "hip3 tung4 haau6 jing3" },
+    { en: "streamline", zh: "精简", jyut: "zing1 gaan2" },
+    { en: "optimization", zh: "优化", jyut: "jau1 faa3" },
+    { en: "scalability", zh: "可扩展性", jyut: "ho2 kong3 zin2 sing3" },
+    { en: "bottleneck", zh: "瓶颈", jyut: "ping4 geng2" },
+    { en: "turnaround", zh: " turnaround", jyut: "zyun2 jing4" },
+    { en: "restructuring", zh: "重组", jyut: "cung4 zou2" },
+    { en: "downsizing", zh: "缩减规模", jyut: "suk1 gaan2 kwai1 mou4" },
+    { en: "layoff", zh: "解雇", jyut: "gaai2 gu3" },
+    { en: "furlough", zh: "无薪假", jyut: "mou4 san1 gaa3" },
+    { en: "strike", zh: "罢工", jyut: "baa6 gung1" },
+    { en: "collective bargaining", zh: "集体谈判", jyut: "zaap6 tai2 taam4 pun3" },
+    { en: "labor union", zh: "工会", jyut: "gung1 wui6" },
+    { en: "occupational safety", zh: "职业安全", jyut: "zik1 jip6 on1 cyun4" },
+    { en: "ergonomics", zh: "人体工学", jyut: "jan4 tai2 gung1 hok6" },
+    { en: "workstation", zh: "工作台", jyut: "gung1 zok3 toi4" },
+    { en: "hot desking", zh: "共享办公桌", jyut: "gung6 hoeng2 baan6 gung1 coek3" },
+    { en: "paperless", zh: "无纸化", jyut: "mou4 zi2 faa3" },
+    { en: "digital transformation", zh: "数码转型", jyut: "sou3 maa5 zyun2 jing4" },
+    { en: "cloud computing", zh: "云端运算", jyut: "wan4 dyun1 wan6 syun3" },
+    { en: "big data", zh: "大数据", jyut: "daai6 sou3 geoi3" },
+    { en: "machine learning", zh: "机器学习", jyut: "gei1 hei3 hok6 zaap6" },
+    { en: "artificial intelligence", zh: "人工智能", jyut: "jan4 gung1 zi3 nang4" },
+    { en: "blockchain", zh: "区块链", jyut: "keoi1 fong1 lin6" },
+    { en: "cryptocurrency", zh: "加密货币", jyut: "gaa1 mat6 fo3 bai6" },
+    { en: "fintech", zh: "金融科技", jyut: "gam1 jung4 fo1 gei6" },
+    { en: "biotech", zh: "生物科技", jyut: "sang1 mat6 fo1 gei6" },
+    { en: "green tech", zh: "绿色科技", jyut: "luk6 sik1 fo1 gei6" },
+    { en: "sustainability", zh: "可持续发展", jyut: "ho2 ci4 zuk6 faat3 zin2" },
+    { en: "carbon neutral", zh: "碳中和", jyut: "taan3 zung1 wo4" },
+    { en: "ESG", zh: "环境社会管治", jyut: "waan4 ging2 se5 wui6 gun2 zi6" },
+    { en: "corporate social responsibility", zh: "企业社会责任", jyut: "kei5 jip6 se5 wui6 zaak3 jam6" },
+    { en: "philanthropy", zh: "慈善", jyut: "ci4 sin6" },
+    { en: "endowment", zh: "捐赠基金", jyut: "gyun1 zang6 gei1 gam1" },
+    { en: "grant", zh: "资助", jyut: "zi1 zo6" },
+    { en: "scholarship", zh: "奖学金", jyut: "zoeng2 hok6 gam1" },
+    { en: "fellowship", zh: "研究金", jyut: "jin4 gau3 gam1" },
+    { en: "accreditation", zh: "认证", jyut: "jing6 zing3" },
+    { en: "curriculum vitae", zh: "履历", jyut: "lei5 lik6" },
+    { en: "covering letter", zh: "求职信", jyut: "kau4 zik1 seon3" },
+    { en: "reference check", zh: "背景调查", jyut: "bui3 ging2 diu6 caa4" },
+    { en: "counteroffer", zh: "还价", jyut: "waan4 gaa3" },
+    { en: "notice period", zh: "通知期", jyut: "tung1 zi1 kei4" },
+    { en: "garden leave", zh: "离职休假", jyut: "lei4 zik1 jau1 gaa3" },
+    { en: "non-compete", zh: "竞业限制", jyut: "ging6 jip6 haan6 zai3" },
+    { en: "headhunter", zh: "猎头", jyut: "lip6 tau4" },
+    { en: "expatriate", zh: "外派人员", jyut: "ngoi6 paai3 jan4 jyun4" },
+    { en: "relocation", zh: "搬迁", jyut: "bun1 cin1" },
+    { en: "work visa", zh: "工作签证", jyut: "gung1 zok3 cim1 zing3" },
+    { en: "permanent residency", zh: "永久居留权", jyut: "wing5 gau2 geoi1 lau4 kyun4" },
+    { en: "naturalization", zh: "入籍", jyut: "jap6 zik6" },
+    { en: "entrepreneur", zh: "企业家", jyut: "kei5 jip6 gaa1" },
+    { en: "sole proprietor", zh: "独资经营者", jyut: "duk6 zi1 ging1 jing4 ze2" },
+    { en: "partnership", zh: "合伙", jyut: "hap6 fo2" },
+    { en: "limited liability", zh: "有限责任", jyut: "jau5 haan6 zaak3 jam6" },
+    { en: "incorporation", zh: "公司注册", jyut: "gung1 si1 zyu3 caak3" },
+    { en: "business registration", zh: "商业登记", jyut: "soeng1 jip6 dang1 gei3" },
+    { en: "tax return", zh: "报税", jyut: "bou3 seoi3" },
+    { en: "audited accounts", zh: "经审计账目", jyut: "ging1 sam2 gai3 zoeng3 muk6" },
+    { en: "filing", zh: "存档", jyut: "cyun4 dong3" },
+    { en: "deadline extension", zh: "延期", jyut: "jin4 kei4" },
+    { en: "force majeure", zh: "不可抗力", jyut: "bat1 ho2 kong3 lik6" },
+    { en: "indemnity", zh: "赔偿保证", jyut: "pui4 soeng4 bou2 zing3" },
+    { en: "waiver", zh: "豁免", jyut: "kut3 min5" },
+    { en: "null and void", zh: "无效", jyut: "mou4 haau6" },
+    { en: "breach of contract", zh: "违约", jyut: "wai4 joek3" },
+    { en: "termination", zh: "终止", jyut: "zung1 zi2" },
+    { en: "renewal", zh: "续约", jyut: "zuk6 joek3" },
+    { en: "escalation", zh: "升级", jyut: "sing1 kap1" },
+    { en: "contingency", zh: "应急", jyut: "jing3 gap1" },
+    { en: "mitigation", zh: "缓解", jyut: "wun6 gaai2" },
+    { en: "stakeholder engagement", zh: "持份者参与", jyut: "ci4 fan6 ze2 caam1 jyu5" },
+    { en: "town hall", zh: "全员大会", jyut: "cyun4 jyun4 daai6 wui6" },
+    { en: "workshop", zh: "工作坊", jyut: "gung1 zok3 fong1" },
+    { en: "seminar", zh: "研讨会", jyut: "jin4 tou3 wui6" },
+    { en: "webinar", zh: "网络研讨会", jyut: "mong5 lok3 jin4 tou3 wui6" },
+    { en: "keynote", zh: "主题演讲", jyut: "zyu2 tai4 jin2 gong2" },
+    { en: "panel discussion", zh: "小组讨论", jyut: "siu2 zou2 tou2 leon6" },
+    { en: "brainstorming", zh: "头脑风暴", jyut: "tau4 nou5 fung1 bou6" },
+    { en: "mind map", zh: "思维导图", jyut: "si1 wai4 dou6 tou4" },
+    { en: "deliverable", zh: "交付成果", jyut: "gaau1 fu6 sing4 gwo2" },
+    { en: "milestone", zh: "里程碑", jyut: "lei5 cing4 bei1" },
+    { en: "projection", zh: "预测", jyut: "jyu6 cak1" },
+    { en: "forecast", zh: "预报", jyut: "jyu6 bou3" },
+    { en: "dashboard", zh: "仪表板", jyut: "ji4 biu2 baan2" },
+    { en: "metrics", zh: "指标", jyut: "zi2 biu1" },
+    { en: "quarterly review", zh: "季度回顾", jyut: "gwai3 dou6 wui4 gu3" },
+    { en: "appraisal cycle", zh: "考核周期", jyut: "haau2 hat6 zau1 kei4" },
+  ],
+  daily: [
+    { en: "cha chaan teng", zh: "茶餐厅", jyut: "caa4 caan1 teng1" },
+    { en: "dim sum", zh: "点心", jyut: "dim2 sam1" },
+    { en: "MTR", zh: "港铁", jyut: "gong2 tit3" },
+    { en: "typhoon", zh: "台风", jyut: "toi4 fung1" },
+    { en: "minibus", zh: "小巴", jyut: "siu2 baa1" },
+    { en: "promenade", zh: "海滨长廊", jyut: "hoi2 ban1 coeng4 long4" },
+    { en: "souvenir", zh: "纪念品", jyut: "gei2 nim6 ban2" },
+    { en: "neighbourhood", zh: "邻里", jyut: "leon4 lei5" },
+    { en: "restaurant", zh: "餐厅", jyut: "caan1 teng1" },
+    { en: "queue", zh: "排队", jyut: "paai4 deoi6" },
+    { en: "umbrella", zh: "雨伞", jyut: "jyu5 saan3" },
+    { en: "tailor", zh: "裁缝", jyut: "coi4 fung4" },
+    { en: "cinema", zh: "电影院", jyut: "din6 jing2 jyun2" },
+    { en: "crowded", zh: "拥挤", jyut: "jung2 zai1" },
+    { en: "relaxing", zh: "放松", jyut: "fong3 sung1" },
+    { en: "breathtaking", zh: "令人叹为观止", jyut: "ling6 jan4 taan3 wai4 gun1 zi2" },
+    { en: "ferry", zh: "渡轮", jyut: "dou6 leon4" },
+    { en: "dai pai dong", zh: "大排档", jyut: "daai6 paai4 dong3" },
+    { en: "wonton noodles", zh: "云吞面", jyut: "wan4 tan1 min6" },
+    { en: "Causeway Bay", zh: "铜锣湾", jyut: "tung4 lo4 waan1" },
+    { en: "Tsim Sha Tsui", zh: "尖沙咀", jyut: "zim1 saa1 zeoi2" },
+    { en: "Victoria Peak", zh: "太平山顶", jyut: "taai3 ping4 saan1 deng2" },
+    { en: "Dragon's Back", zh: "龙脊", jyut: "lung4 zek3" },
+    { en: "Ocean Park", zh: "海洋公园", jyut: "hoi2 joeng4 gung1 jyun2" },
+    { en: "Star Ferry", zh: "天星小轮", jyut: "tin1 sing1 siu2 leon4" },
+    { en: "hot pot", zh: "火锅", jyut: "fo2 wo1" },
+    { en: "hiking", zh: "行山", jyut: "haang4 saan1" },
+    { en: "air conditioning", zh: "冷气", jyut: "laang5 hei3" },
+    { en: "public holiday", zh: "公众假期", jyut: "gung1 zung3 gaa3 kei4" },
+    { en: "Mandarin", zh: "普通话", jyut: "pou2 tung1 waa6" },
+    { en: "egg tart", zh: "蛋挞", jyut: "daan6 taat1" },
+    { en: "pineapple bun", zh: "菠萝包", jyut: "bo1 lo4 baau1" },
+    { en: "milk tea", zh: "奶茶", jyut: "naai5 caa4" },
+    { en: "yuan yang", zh: "鸳鸯", jyut: "jyun1 joeng1" },
+    { en: "siu mei", zh: "烧味", jyut: "siu1 mei6" },
+    { en: "char siu", zh: "叉烧", jyut: "caa1 siu1" },
+    { en: "roast goose", zh: "烧鹅", jyut: "siu1 ngo4" },
+    { en: "cheung fun", zh: "肠粉", jyut: "coeng4 fan2" },
+    { en: "congee", zh: "粥", jyut: "zuk1" },
+    { en: "fried rice", zh: "炒饭", jyut: "caau2 faan6" },
+    { en: "chow mein", zh: "炒面", jyut: "caau2 min6" },
+    { en: "spring roll", zh: "春卷", jyut: "ceon1 gyun2" },
+    { en: "turnip cake", zh: "萝卜糕", jyut: "lo4 baak6 gou1" },
+    { en: "rice noodle roll", zh: "猪肠粉", jyut: "zyu1 coeng4 fan2" },
+    { en: "shrimp dumpling", zh: "虾饺", jyut: "haa1 gaau2" },
+    { en: "siu mai", zh: "烧卖", jyut: "siu1 maai6" },
+    { en: "barbecue pork bun", zh: "叉烧包", jyut: "caa1 siu1 baau1" },
+    { en: "custard bun", zh: "奶黄包", jyut: "naai5 wong4 baau1" },
+    { en: "egg waffle", zh: "鸡蛋仔", jyut: "gai1 daan6 zai2" },
+    { en: "fish ball", zh: "鱼蛋", jyut: "jyu4 daan6" },
+    { en: "stinky tofu", zh: "臭豆腐", jyut: "cau3 dau6 fu6" },
+    { en: "curry fish ball", zh: "咖喱鱼蛋", jyut: "gaa3 lei1 jyu4 daan6" },
+    { en: "beef brisket", zh: "牛腩", jyut: "ngau4 naam5" },
+    { en: "sweet and sour pork", zh: "咕噜肉", jyut: "gu1 lou1 juk6" },
+    { en: "lemon tea", zh: "柠檬茶", jyut: "ning4 mung1 caa4" },
+    { en: "bubble tea", zh: "珍珠奶茶", jyut: "zan1 zyu1 naai5 caa4" },
+    { en: "red bean ice", zh: "红豆冰", jyut: "hung4 dau6 bing1" },
+    { en: "sago", zh: "西米露", jyut: "sai1 mai5 lou6" },
+    { en: "tong sui", zh: "糖水", jyut: "tong4 seoi2" },
+    { en: "mango pomelo sago", zh: "杨枝甘露", jyut: "joeng4 zi1 gam1 lou6" },
+    { en: "winter melon tea", zh: "冬瓜茶", jyut: "dung1 gwaa1 caa4" },
+    { en: "sugar cane juice", zh: "竹蔗水", jyut: "zuk1 ze3 seoi2" },
+    { en: "herbal tea", zh: "凉茶", jyut: "loeng4 caa4" },
+    { en: "claypot rice", zh: "煲仔饭", jyut: "bou1 zai2 faan6" },
+    { en: "hotpot", zh: "打边炉", jyut: "daa2 bin1 lou4" },
+    { en: "dim sum basket", zh: "蒸笼", jyut: "zing1 lung4" },
+    { en: "street food", zh: "街头小食", jyut: "gaai1 tau4 siu2 sik6" },
+    { en: "wet market", zh: "街市", jyut: "gaai1 si5" },
+    { en: "supermarket", zh: "超市", jyut: "ciu1 si5" },
+    { en: "convenience store", zh: "便利店", jyut: "bin6 lei6 dim3" },
+    { en: "bakery", zh: "面包店", jyut: "min6 baau1 dim3" },
+    { en: "butcher", zh: "肉档", jyut: "juk6 dong3" },
+    { en: "seafood", zh: "海鲜", jyut: "hoi2 sin1" },
+    { en: "fresh produce", zh: "新鲜食材", jyut: "san1 sin1 sik6 coi4" },
+    { en: "organic", zh: "有机", jyut: "jau5 gei1" },
+    { en: "vegetarian", zh: "素食", jyut: "sou3 sik6" },
+    { en: "halal", zh: "清真", jyut: "cing1 zan1" },
+    { en: "buffet", zh: "自助餐", jyut: "zi6 zo6 caan1" },
+    { en: "set meal", zh: "套餐", jyut: "tou3 caan1" },
+    { en: "a la carte", zh: "单点", jyut: "daan1 dim2" },
+    { en: "takeaway", zh: "外卖", jyut: "ngoi6 maai6" },
+    { en: "delivery", zh: "外送", jyut: "ngoi6 sung3" },
+    { en: "booking", zh: "订位", jyut: "deng6 wai6" },
+    { en: "reservation", zh: "预约", jyut: "jyu6 joek3" },
+    { en: "waiter", zh: "服务员", jyut: "fuk6 mou6 jyun4" },
+    { en: "bill please", zh: "买单", jyut: "maai5 daan1" },
+    { en: "service charge", zh: "服务费", jyut: "fuk6 mou6 fai3" },
+    { en: "Lantau Island", zh: "大屿山", jyut: "daai6 jyu4 saan1" },
+    { en: "Cheung Chau", zh: "长洲", jyut: "coeng4 zau1" },
+    { en: "Lamma Island", zh: "南丫岛", jyut: "naam4 aa1 dou2" },
+    { en: "Stanley", zh: "赤柱", jyut: "cek3 cyu5" },
+    { en: "Mong Kok", zh: "旺角", jyut: "wong6 gok3" },
+    { en: "Central", zh: "中环", jyut: "zung1 waan4" },
+    { en: "Admiralty", zh: "金钟", jyut: "gam1 zung1" },
+    { en: "Wan Chai", zh: "湾仔", jyut: "waan1 zai2" },
+    { en: "Sheung Wan", zh: "上环", jyut: "soeng6 waan4" },
+    { en: "Kennedy Town", zh: "坚尼地城", jyut: "gin1 nei4 dei6 sing4" },
+    { en: "Aberdeen", zh: "香港仔", jyut: "hoeng1 gong2 zai2" },
+    { en: "Repulse Bay", zh: "浅水湾", jyut: "cin2 seoi2 waan1" },
+    { en: "Deep Water Bay", zh: "深水湾", jyut: "sam1 seoi2 waan1" },
+    { en: "Sai Kung", zh: "西贡", jyut: "sai1 gung3" },
+    { en: "Tai O", zh: "大澳", jyut: "daai6 ou3" },
+    { en: "Ngong Ping", zh: "昂坪", jyut: "ngong4 ping4" },
+    { en: "Tian Tan Buddha", zh: "天坛大佛", jyut: "tin1 taan4 daai6 fat6" },
+    { en: "Po Lin Monastery", zh: "宝莲寺", jyut: "bou2 lin4 zi6" },
+    { en: "Chi Lin Nunnery", zh: "志莲净苑", jyut: "zi3 lin4 zing6 jyun2" },
+    { en: "Wong Tai Sin Temple", zh: "黄大仙祠", jyut: "wong4 daai6 sin1 ci4" },
+    { en: "Man Mo Temple", zh: "文武庙", jyut: "man4 mou5 miu6" },
+    { en: "clock tower", zh: "钟楼", jyut: "zung1 lau4" },
+    { en: "Avenue of Stars", zh: "星光大道", jyut: "sing1 gwong1 daai6 dou6" },
+    { en: "skyline", zh: "天际线", jyut: "tin1 zai3 sin3" },
+    { en: "observation deck", zh: "观景台", jyut: "gun1 ging2 toi4" },
+    { en: "shopping mall", zh: "商场", jyut: "soeng1 coeng4" },
+    { en: "night market", zh: "夜市", jyut: "je6 si5" },
+    { en: "Temple Street", zh: "庙街", jyut: "miu6 gaai1" },
+    { en: "Ladies Market", zh: "女人街", jyut: "neoi5 jan4 gaai1" },
+    { en: "Sneaker Street", zh: "波鞋街", jyut: "bo1 haai4 gaai1" },
+    { en: "Flower Market", zh: "花墟", jyut: "faa1 heoi1" },
+    { en: "Goldfish Market", zh: "金鱼街", jyut: "gam1 jyu4 gaai1" },
+    { en: "Jade Market", zh: "玉器市场", jyut: "juk6 hei3 si5 coeng4" },
+    { en: "antique shop", zh: "古董店", jyut: "gu2 dung2 dim3" },
+    { en: "pawn shop", zh: "当铺", jyut: "dong3 pou3" },
+    { en: "Chinese medicine shop", zh: "中药铺", jyut: "zung1 joek6 pou3" },
+    { en: "dried seafood shop", zh: "海味铺", jyut: "hoi2 mei6 pou3" },
+    { en: "shopping arcade", zh: "商场", jyut: "soeng1 coeng4" },
+    { en: "boutique", zh: "精品店", jyut: "zing1 ban2 dim3" },
+    { en: "outlet", zh: "特卖场", jyut: "dak6 maai6 coeng4" },
+    { en: "department store", zh: "百货公司", jyut: "baak3 fo3 gung1 si1" },
+    { en: "discount", zh: "折扣", jyut: "zit3 kau3" },
+    { en: "bargain", zh: "讲价", jyut: "gong2 gaa3" },
+    { en: "receipt", zh: "收据", jyut: "sau1 geoi3" },
+    { en: "refund", zh: "退款", jyut: "teoi3 fun2" },
+    { en: "exchange policy", zh: "换货政策", jyut: "wun6 fo3 zing3 caak3" },
+    { en: "fitting room", zh: "试身室", jyut: "si3 san1 sat1" },
+    { en: "size", zh: "尺寸", jyut: "cek2 cyun3" },
+    { en: "cashier", zh: "收银处", jyut: "sau1 ngan4 cyu3" },
+    { en: "credit card", zh: "信用卡", jyut: "seon3 jung6 kaat1" },
+    { en: "Octopus card", zh: "八达通", jyut: "baat3 daat6 tung1" },
+    { en: "electronic payment", zh: "电子支付", jyut: "din6 zi2 zi1 fu6" },
+    { en: "contactless", zh: "感应式", jyut: "gam2 jing3 sik1" },
+    { en: "membership", zh: "会员", jyut: "wui6 jyun4" },
+    { en: "loyalty program", zh: "积分计划", jyut: "zik1 fan1 gai3 waak6" },
+    { en: "sale", zh: "减价", jyut: "gaam2 gaa3" },
+    { en: "clearance", zh: "清货", jyut: "cing1 fo3" },
+    { en: "limited edition", zh: "限量版", jyut: "haan6 loeng6 baan2" },
+    { en: "taxi", zh: "的士", jyut: "dik1 si6" },
+    { en: "bus", zh: "巴士", jyut: "baa1 si6" },
+    { en: "tram", zh: "电车", jyut: "din6 ce1" },
+    { en: "double decker", zh: "双层巴士", jyut: "soeng1 cang4 baa1 si6" },
+    { en: "escalator", zh: "扶手电梯", jyut: "fu4 sau2 din6 tai1" },
+    { en: "travelator", zh: "自动行人道", jyut: "zi6 dung6 hang4 jan4 dou6" },
+    { en: "pedestrian", zh: "行人", jyut: "hang4 jan4" },
+    { en: "cross-harbour tunnel", zh: "海底隧道", jyut: "hoi2 dai2 seoi6 dou6" },
+    { en: "suspension bridge", zh: "吊桥", jyut: "diu3 kiu4" },
+    { en: "flyover", zh: "天桥", jyut: "tin1 kiu4" },
+    { en: "roundabout", zh: "回旋处", jyut: "wui4 syun4 cyu3" },
+    { en: "traffic jam", zh: "塞车", jyut: "sak1 ce1" },
+    { en: "rush hour", zh: "繁忙时间", jyut: "faan4 mong4 si4 gaan3" },
+    { en: "zebra crossing", zh: "斑马线", jyut: "baan1 maa5 sin3" },
+    { en: "traffic light", zh: "红绿灯", jyut: "hung4 luk6 dang1" },
+    { en: "parking meter", zh: "泊车咪表", jyut: "paak3 ce1 mai1 biu1" },
+    { en: "car park", zh: "停车场", jyut: "ting4 ce1 coeng4" },
+    { en: "congestion charge", zh: "拥堵费", jyut: "jung2 duk1 fai3" },
+    { en: "public transport", zh: "公共交通", jyut: "gung1 gung6 gaau1 tung1" },
+    { en: "first bus", zh: "头班车", jyut: "tau4 baan1 ce1" },
+    { en: "last bus", zh: "尾班车", jyut: "mei5 baan1 ce1" },
+    { en: "interchange", zh: "转车站", jyut: "zyun2 ce1 zaam6" },
+    { en: "terminus", zh: "总站", jyut: "zung2 zaam6" },
+    { en: "departure", zh: "出发", jyut: "ceot1 faat3" },
+    { en: "arrival", zh: "到达", jyut: "dou3 daat6" },
+    { en: "platform", zh: "月台", jyut: "jyut6 toi4" },
+    { en: "concourse", zh: "大堂", jyut: "daai6 tong4" },
+    { en: "exit", zh: "出口", jyut: "ceot1 hau2" },
+    { en: "entrance", zh: "入口", jyut: "jap6 hau2" },
+    { en: "lift", zh: "升降机", jyut: "sing1 gong3 gei1" },
+    { en: "moving walkway", zh: "自动行人道", jyut: "zi6 dung6 hang4 jan4 dou6" },
+    { en: "passenger", zh: "乘客", jyut: "sing4 haak3" },
+    { en: "commuter", zh: "通勤者", jyut: "tung1 kan4 ze2" },
+    { en: "route", zh: "路线", jyut: "lou6 sin3" },
+    { en: "one way", zh: "单程", jyut: "daan1 cing4" },
+    { en: "round trip", zh: "来回", jyut: "loi4 wui4" },
+    { en: "airport express", zh: "机场快线", jyut: "gei1 coeng4 faai3 sin3" },
+    { en: "check-in", zh: "办理登机", jyut: "baan6 lei5 dang1 gei1" },
+    { en: "boarding pass", zh: "登机证", jyut: "dang1 gei1 zing3" },
+    { en: "luggage", zh: "行李", jyut: "hang4 lei5" },
+    { en: "carry-on", zh: "手提行李", jyut: "sau2 tai4 hang4 lei5" },
+    { en: "customs", zh: "海关", jyut: "hoi2 gwaan1" },
+    { en: "duty free", zh: "免税", jyut: "min5 seoi3" },
+    { en: "arrival hall", zh: "抵港大堂", jyut: "dai2 gong2 daai6 tong4" },
+    { en: "departure gate", zh: "登机闸口", jyut: "dang1 gei1 zaap6 hau2" },
+    { en: "runway", zh: "跑道", jyut: "paau2 dou6" },
+    { en: "skyscraper", zh: "摩天大楼", jyut: "mo1 tin1 daai6 lau4" },
+    { en: "residential", zh: "住宅", jyut: "zyu6 zaak6" },
+    { en: "commercial", zh: "商业", jyut: "soeng1 jip6" },
+    { en: "industrial", zh: "工业", jyut: "gung1 jip6" },
+    { en: "estate", zh: "屋苑", jyut: "uk1 jyun2" },
+    { en: "public housing", zh: "公屋", jyut: "gung1 uk1" },
+    { en: "Home Ownership Scheme", zh: "居屋", jyut: "geoi1 uk1" },
+    { en: "sandwich class", zh: "夹心阶层", jyut: "gaap3 sam1 gaai1 cang4" },
+    { en: "property", zh: "物业", jyut: "mat6 jip6" },
+    { en: "square foot", zh: "平方呎", jyut: "ping4 fong1 cek3" },
+    { en: "gross floor area", zh: "建筑面积", jyut: "gin3 zuk1 min6 zik1" },
+    { en: "saleable area", zh: "实用面积", jyut: "sat6 jung6 min6 zik1" },
+    { en: "layout", zh: "间隔", jyut: "gaan3 gaak3" },
+    { en: "renovation", zh: "装修", jyut: "zong1 sau1" },
+    { en: "furnished", zh: "连家具", jyut: "lin4 gaa1 geoi6" },
+    { en: "unfurnished", zh: "不连家具", jyut: "bat1 lin4 gaa1 geoi6" },
+    { en: "lease", zh: "租约", jyut: "zou1 joek3" },
+    { en: "landlord", zh: "业主", jyut: "jip6 zyu2" },
+    { en: "tenant", zh: "租客", jyut: "zou1 haak3" },
+    { en: "deposit", zh: "按金", jyut: "on3 gam1" },
+    { en: "stamp duty", zh: "印花税", jyut: "jan3 faa1 seoi3" },
+    { en: "mortgage loan", zh: "按揭贷款", jyut: "on3 kit3 taai3 fun2" },
+    { en: "valuation report", zh: "估价报告", jyut: "gu2 gaa3 bou3 gou3" },
+    { en: "deed of mutual covenant", zh: "公契", jyut: "gung1 kai3" },
+    { en: "management fee", zh: "管理费", jyut: "gun2 lei5 fai3" },
+    { en: "sinking fund", zh: "维修基金", jyut: "wai4 sau1 gei1 gam1" },
+    { en: "owners corporation", zh: "业主立案法团", jyut: "jip6 zyu2 laap6 on3 faat3 tyun4" },
+    { en: "building management", zh: "大厦管理", jyut: "daai6 haa6 gun2 lei5" },
+    { en: "security guard", zh: "保安员", jyut: "bou2 on1 jyun4" },
+    { en: "concierge", zh: "礼宾部", jyut: "lai5 ban1 bou6" },
+    { en: "mailbox", zh: "信箱", jyut: "seon3 soeng1" },
+    { en: "intercom", zh: "对讲机", jyut: "deoi3 gong2 gei1" },
+    { en: "air conditioner", zh: "冷气机", jyut: "laang5 hei3 gei1" },
+    { en: "dehumidifier", zh: "抽湿机", jyut: "cau1 sap1 gei1" },
+    { en: "water heater", zh: "热水器", jyut: "jit6 seoi2 hei3" },
+    { en: "washing machine", zh: "洗衣机", jyut: "sai2 ji1 gei1" },
+    { en: "clothes dryer", zh: "干衣机", jyut: "gon1 ji1 gei1" },
+    { en: "dishwasher", zh: "洗碗机", jyut: "sai2 wun2 gei1" },
+    { en: "microwave", zh: "微波炉", jyut: "mei4 bo1 lou4" },
+    { en: "refrigerator", zh: "雪柜", jyut: "syut3 gwai6" },
+    { en: "rice cooker", zh: "电饭煲", jyut: "din6 faan6 bou1" },
+    { en: "kettle", zh: "电水煲", jyut: "din6 seoi2 bou1" },
+    { en: "vacuum cleaner", zh: "吸尘机", jyut: "kap1 can4 gei1" },
+    { en: "utility bill", zh: "水电煤费", jyut: "seoi2 din6 mui4 fai3" },
+    { en: "broadband", zh: "宽频", jyut: "fun1 pan4" },
+    { en: "recycling", zh: "回收", jyut: "wui4 sau1" },
+    { en: "rubbish collection", zh: "垃圾收集", jyut: "laap6 saap3 sau1 zaap6" },
+    { en: "cleansing", zh: "清洁", jyut: "cing1 git3" },
+    { en: "pest control", zh: "灭虫", jyut: "mit6 cung4" },
+    { en: "humidity", zh: "湿气", jyut: "sap1 hei3" },
+    { en: "mould", zh: "发霉", jyut: "faat3 mui4" },
+    { en: "ventilation", zh: "通风", jyut: "tung1 fung1" },
+    { en: "insulation", zh: "隔热", jyut: "gaak3 jit6" },
+    { en: "mosquito net", zh: "蚊帐", jyut: "man1 zoeng3" },
+    { en: "mosquito coil", zh: "蚊香", jyut: "man1 hoeng1" },
+    { en: "insect repellent", zh: "驱蚊剂", jyut: "keoi1 man1 zai1" },
+    { en: "canned food", zh: "罐头", jyut: "gun3 tau4" },
+    { en: "instant noodles", zh: "即食面", jyut: "zik1 sik6 min6" },
+    { en: "frozen food", zh: "冷冻食品", jyut: "laang5 dung3 sik6 ban2" },
+    { en: "leftovers", zh: "剩菜", jyut: "sing6 coi3" },
+    { en: "expiry date", zh: "过期日", jyut: "gwo3 kei4 jat6" },
+    { en: "best before", zh: "最佳食用日期", jyut: "zeoi3 gaai1 sik6 jung6 jat6 kei4" },
+    { en: "typhoon signal", zh: "台风信号", jyut: "toi4 fung1 seon3 hou6" },
+    { en: "amber rainstorm", zh: "黄色暴雨", jyut: "wong4 sik1 bou6 jyu5" },
+    { en: "red rainstorm", zh: "红色暴雨", jyut: "hung4 sik1 bou6 jyu5" },
+    { en: "black rainstorm", zh: "黑色暴雨", jyut: "hak1 sik1 bou6 jyu5" },
+    { en: "thunderstorm", zh: "雷暴", jyut: "leoi4 bou6" },
+    { en: "landslide", zh: "山泥倾泻", jyut: "saan1 nai4 king1 se3" },
+    { en: "flooding", zh: "水浸", jyut: "seoi2 zam3" },
+    { en: "storm surge", zh: "风暴潮", jyut: "fung1 bou6 ciu4" },
+    { en: "heat wave", zh: "热浪", jyut: "jit6 long6" },
+    { en: "cold front", zh: "冷锋", jyut: "laang5 fung1" },
+    { en: "monsoon", zh: "季风", jyut: "gwai3 fung1" },
+    { en: "subtropical", zh: "亚热带", jyut: "aa3 jit6 daai3" },
+    { en: "muggy", zh: "闷热", jyut: "mun6 jit6" },
+    { en: "drizzle", zh: "毛毛雨", jyut: "mou4 mou4 jyu5" },
+    { en: "downpour", zh: "倾盆大雨", jyut: "king1 pun4 daai6 jyu5" },
+    { en: "umbrella", zh: "遮", jyut: "ze1" },
+    { en: "raincoat", zh: "雨衣", jyut: "jyu5 ji1" },
+    { en: "wellies", zh: "水鞋", jyut: "seoi2 haai4" },
+    { en: "temperature", zh: "温度", jyut: "wan1 dou6" },
+    { en: "Celsius", zh: "摄氏度", jyut: "sip3 si6 dou6" },
+    { en: "forecast", zh: "天气预报", jyut: "tin1 hei3 jyu6 bou3" },
+    { en: "observatory", zh: "天文台", jyut: "tin1 man4 toi4" },
+    { en: "Lunar New Year", zh: "农历新年", jyut: "nung4 lik6 san1 nin4" },
+    { en: "red packet", zh: "利是", jyut: "lei6 si6" },
+    { en: "Mid-Autumn Festival", zh: "中秋节", jyut: "zung1 cau1 zit3" },
+    { en: "mooncake", zh: "月饼", jyut: "jyut6 beng2" },
+    { en: "lantern", zh: "灯笼", jyut: "dang1 lung4" },
+    { en: "Dragon Boat Festival", zh: "端午节", jyut: "dyun1 ng5 zit3" },
+    { en: "rice dumpling", zh: "粽", jyut: "zung2" },
+    { en: "Ching Ming Festival", zh: "清明节", jyut: "cing1 ming4 zit3" },
+    { en: "grave sweeping", zh: "扫墓", jyut: "sou3 mou6" },
+    { en: "Chung Yeung Festival", zh: "重阳节", jyut: "cung4 joeng4 zit3" },
+    { en: "ghost festival", zh: "盂兰节", jyut: "jyu4 laan4 zit3" },
+    { en: "incense", zh: "香", jyut: "hoeng1" },
+    { en: "joss paper", zh: "冥镪", jyut: "ming4 koeng5" },
+    { en: "feng shui", zh: "风水", jyut: "fung1 seoi2" },
+    { en: "fortune teller", zh: "算命先生", jyut: "syun3 meng6 sin1 saang1" },
+    { en: "face reading", zh: "看相", jyut: "hon3 soeng3" },
+    { en: "palm reading", zh: "看掌", jyut: "hon3 zoeng2" },
+    { en: "auspicious", zh: "吉利", jyut: "gat1 lei6" },
+    { en: "taboo", zh: "禁忌", jyut: "gam3 gei6" },
+    { en: "superstition", zh: "迷信", jyut: "mai4 seon3" },
+    { en: "lucky number", zh: "幸运数字", jyut: "hang6 wan6 sou3 zi6" },
+    { en: "red", zh: "红色", jyut: "hung4 sik1" },
+    { en: "firecracker", zh: "爆竹", jyut: "baau3 zuk1" },
+    { en: "lion dance", zh: "舞狮", jyut: "mou5 si1" },
+    { en: "dragon dance", zh: "舞龙", jyut: "mou5 lung4" },
+    { en: "kung fu", zh: "功夫", jyut: "gung1 fu1" },
+    { en: "tai chi", zh: "太极", jyut: "taai3 gik6" },
+    { en: "mahjong", zh: "麻将", jyut: "maa4 zoeng3" },
+    { en: "horse racing", zh: "赛马", jyut: "coi3 maa5" },
+    { en: "Mark Six", zh: "六合彩", jyut: "luk6 hap6 coi2" },
+    { en: "casino", zh: "赌场", jyut: "dou2 coeng4" },
+    { en: "Macau", zh: "澳门", jyut: "ou3 mun4" },
+    { en: "junk boat", zh: "帆船", jyut: "faan4 syun4" },
+    { en: "sampan", zh: "舢舨", jyut: "saan1 baan2" },
+    { en: "fishing village", zh: "渔村", jyut: "jyu4 cyun1" },
+    { en: "floating restaurant", zh: "水上餐厅", jyut: "seoi2 soeng6 caan1 teng1" },
+    { en: "aquarium", zh: "水族馆", jyut: "seoi2 zuk6 gun2" },
+    { en: "botanical garden", zh: "植物园", jyut: "zik6 mat6 jyun4" },
+    { en: "zoological garden", zh: "动植物公园", jyut: "dung6 zik6 mat6 gung1 jyun2" },
+    { en: "wetland", zh: "湿地", jyut: "sap1 dei6" },
+    { en: "mangrove", zh: "红树林", jyut: "hung4 syu6 lam4" },
+    { en: "coral", zh: "珊瑚", jyut: "saan1 wu4" },
+    { en: "beach", zh: "沙滩", jyut: "saa1 taan1" },
+    { en: "swimming", zh: "游泳", jyut: "jau4 wing6" },
+    { en: "surfing", zh: "冲浪", jyut: "cung1 long6" },
+    { en: "kayaking", zh: "独木舟", jyut: "duk6 muk6 zau1" },
+    { en: "camping", zh: "露营", jyut: "lou6 jing4" },
+    { en: "barbecue", zh: "烧烤", jyut: "siu1 haau1" },
+    { en: "picnic", zh: "野餐", jyut: "je5 caan1" },
+    { en: "jogging", zh: "跑步", jyut: "paau2 bou6" },
+    { en: "cycling", zh: "踩单车", jyut: "caai2 daan1 ce1" },
+    { en: "yoga", zh: "瑜伽", jyut: "jyu4 gaa1" },
+    { en: "gym", zh: "健身房", jyut: "gin6 san1 fong4" },
+    { en: "swimming pool", zh: "泳池", jyut: "wing6 ci4" },
+    { en: "sports ground", zh: "运动场", jyut: "wan6 dung6 coeng4" },
+    { en: "stadium", zh: "体育馆", jyut: "tai2 juk6 gun2" },
+    { en: "library", zh: "图书馆", jyut: "tou4 syu1 gun2" },
+    { en: "museum", zh: "博物馆", jyut: "bok3 mat6 gun2" },
+    { en: "art gallery", zh: "艺术馆", jyut: "ngai6 seot6 gun2" },
+    { en: "concert hall", zh: "音乐厅", jyut: "jam1 ngok6 teng1" },
+    { en: "exhibition", zh: "展览", jyut: "zin2 laam5" },
+    { en: "fireworks", zh: "烟花", jyut: "jin1 faa1" },
+    { en: "laser show", zh: "激光表演", jyut: "gik1 gwong1 biu2 jin2" },
+    { en: "light show", zh: "灯光表演", jyut: "dang1 gwong1 biu2 jin2" },
+    { en: "festival", zh: "节日", jyut: "zit3 jat6" },
+    { en: "parade", zh: "巡游", jyut: "ceon4 jau4" },
+    { en: "carnival", zh: "嘉年华", jyut: "gaa1 nin4 waa4" },
+    { en: "celebration", zh: "庆祝", jyut: "hing3 zuk1" },
+    { en: "wedding banquet", zh: "婚宴", jyut: "fan1 jin3" },
+    { en: "bride", zh: "新娘", jyut: "san1 noeng4" },
+    { en: "groom", zh: "新郎", jyut: "san1 long4" },
+    { en: "wedding tea ceremony", zh: "敬茶", jyut: "ging3 caa4" },
+    { en: "wedding invitation", zh: "喜帖", jyut: "hei2 tip3" },
+    { en: "congratulations", zh: "恭喜", jyut: "gung1 hei2" },
+    { en: "newborn", zh: "新生儿", jyut: "san1 saang1 ji4" },
+    { en: "full moon celebration", zh: "满月酒", jyut: "mun5 jyut6 zau2" },
+    { en: "elderly", zh: "长者", jyut: "zoeng2 ze2" },
+    { en: "respect", zh: "尊重", jyut: "zyun1 zung6" },
+    { en: "filial piety", zh: "孝道", jyut: "haau3 dou6" },
+    { en: "teacher", zh: "老师", jyut: "lou5 si1" },
+    { en: "student", zh: "学生", jyut: "hok6 saang1" },
+    { en: "homework", zh: "功课", jyut: "gung1 fo3" },
+    { en: "examination", zh: "考试", jyut: "haau2 si5" },
+    { en: "kindergarten", zh: "幼儿园", jyut: "jau3 ji4 jyun2" },
+    { en: "primary school", zh: "小学", jyut: "siu2 hok6" },
+    { en: "secondary school", zh: "中学", jyut: "zung1 hok6" },
+    { en: "university", zh: "大学", jyut: "daai6 hok6" },
+    { en: "degree", zh: "学位", jyut: "hok6 wai6" },
+    { en: "diploma", zh: "文凭", jyut: "man4 pang4" },
+    { en: "graduation", zh: "毕业", jyut: "bat1 jip6" },
+    { en: "tutorial", zh: "补习", jyut: "bou2 zaap6" },
+    { en: "private tutor", zh: "私人补习老师", jyut: "si1 jan4 bou2 zaap6 lou5 si1" },
+    { en: "cram school", zh: "补习社", jyut: "bou2 zaap6 se5" },
+    { en: "language exchange", zh: "语言交换", jyut: "jyu5 jin4 gaau1 wun6" },
+    { en: "bilingual", zh: "双语", jyut: "soeng1 jyu5" },
+    { en: "trilingual", zh: "三语", jyut: "saam1 jyu5" },
+    { en: "Cantonese", zh: "广东话", jyut: "gwong2 dung1 waa6" },
+    { en: "English", zh: "英文", jyut: "jing1 man4" },
+    { en: "Putonghua", zh: "普通话", jyut: "pou2 tung1 waa6" },
+    { en: "code-switching", zh: "语码转换", jyut: "jyu5 maa5 zyun2 wun6" },
+    { en: "Chinglish", zh: "中式英文", jyut: "zung1 sik1 jing1 man4" },
+    { en: "translation", zh: "翻译", jyut: "faan1 jik6" },
+    { en: "interpretation", zh: "口译", jyut: "hau2 jik6" },
+    { en: "dialect", zh: "方言", jyut: "fong1 jin4" },
+    { en: "slang", zh: "俚语", jyut: "lei5 jyu5" },
+    { en: "colloquial", zh: "口语", jyut: "hau2 jyu5" },
+    { en: "formal", zh: "正式", jyut: "zing3 sik1" },
+    { en: "polite", zh: "有礼貌", jyut: "jau5 lai5 maau6" },
+    { en: "greeting", zh: "问候", jyut: "man6 hau6" },
+    { en: "farewell", zh: "告别", jyut: "gou3 bit6" },
+    { en: "thank you", zh: "多谢", jyut: "do1 ze6" },
+    { en: "excuse me", zh: "唔该", jyut: "m4 goi1" },
+    { en: "sorry", zh: "对唔住", jyut: "deoi3 m4 zyu6" },
+    { en: "please", zh: "请", jyut: "cing2" },
+    { en: "welcome", zh: "欢迎", jyut: "fun1 jing4" },
+    { en: "good morning", zh: "早晨", jyut: "zou2 san4" },
+    { en: "good night", zh: "早唞", jyut: "zou2 tau2" },
+    { en: "how are you", zh: "你好吗", jyut: "nei5 hou2 maa3" },
+    { en: "take care", zh: "保重", jyut: "bou2 zung6" },
+    { en: "see you", zh: "再见", jyut: "zoi3 gin3" },
+    { en: "add oil", zh: "加油", jyut: "gaa1 jau4" },
+    { en: "face", zh: "面子", jyut: "min6 zi2" },
+    { en: "guanxi", zh: "关系", jyut: "gwaan1 hai6" },
+    { en: "harmony", zh: "和谐", jyut: "wo4 haai4" },
+    { en: "confucianism", zh: "儒家思想", jyut: "jyu4 gaa1 si1 soeng2" },
+    { en: "yum cha", zh: "饮茶", jyut: "jam2 caa4" },
+    { en: "afternoon tea", zh: "下午茶", jyut: "haa6 ng5 caa4" },
+    { en: "high tea", zh: "英式下午茶", jyut: "jing1 sik1 haa6 ng5 caa4" },
+    { en: "brunch", zh: "早午餐", jyut: "zou2 ng5 caan1" },
+    { en: "siesta", zh: "午睡", jyut: "ng5 seoi6" },
+    { en: "karaoke", zh: "卡拉OK", jyut: "kaa1 laa1 OK" },
+    { en: "board game", zh: "桌上游戏", jyut: "coek3 soeng6 jau4 hei3" },
+    { en: "video game", zh: "电子游戏", jyut: "din6 zi2 jau4 hei3" },
+    { en: "social media", zh: "社交媒体", jyut: "se5 gaau1 mui4 tai2" },
+    { en: "smartphone", zh: "智能手机", jyut: "zi3 nang4 sau2 gei1" },
+    { en: "text message", zh: "短信", jyut: "dyun2 seon3" },
+    { en: "video call", zh: "视像通话", jyut: "si6 zoeng6 tung1 waa6" },
+    { en: "Wi-Fi", zh: "无线网络", jyut: "mou4 sin3 mong5 lok3" },
+    { en: "password", zh: "密码", jyut: "mat6 maa5" },
+    { en: "username", zh: "用户名", jyut: "jung6 wu6 ming4" },
+    { en: "login", zh: "登入", jyut: "dang1 jap6" },
+    { en: "logout", zh: "登出", jyut: "dang1 ceot1" },
+    { en: "download", zh: "下载", jyut: "haa6 zoi3" },
+    { en: "upload", zh: "上载", jyut: "soeng6 zoi3" },
+    { en: "streaming", zh: "串流", jyut: "cyun3 lau4" },
+    { en: "podcast", zh: "播客", jyut: "bo3 haak3" },
+    { en: "influencer", zh: "网红", jyut: "mong5 hung4" },
+    { en: "trending", zh: "热门", jyut: "jit6 mun4" },
+    { en: "viral", zh: "疯传", jyut: "fung1 cyun4" },
+    { en: "meme", zh: "梗图", jyut: "gang2 tou4" },
+    { en: "selfie", zh: "自拍", jyut: "zi6 paak3" },
+    { en: "hashtag", zh: "标签", jyut: "biu1 cim1" },
+    { en: "subscribe", zh: "订阅", jyut: "ding3 jyut6" },
+    { en: "like", zh: "赞好", jyut: "zaan3 hou2" },
+    { en: "share", zh: "分享", jyut: "fan1 hoeng2" },
+    { en: "comment", zh: "留言", jyut: "lau4 jin4" },
+    { en: "notification", zh: "通知", jyut: "tung1 zi1" },
+    { en: "application", zh: "应用程式", jyut: "jing3 jung6 cing4 sik1" },
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  currentCategory: "all",
+  words: [],           // current word list
+  wordIndex: 0,        // index in current list
+  userInput: "",       // characters typed for current word
+  totalInputs: 0,      // total keystrokes
+  totalCorrect: 0,     // total correct keystrokes
+  totalErrors: 0,      // total wrong keystrokes
+  wordsCompleted: 0,   // number of words successfully typed
+  startTime: null,
+  endTime: null,
+  isStarted: false,
+  isComplete: false,
+  isWrong: false,      // currently in error state (waiting to reset)
+  wrongTimer: null,
+  soundEnabled: true,
+  dailyCount: 0,       // 0 = all words
+  wordStats: {},       // { wordKey: { attempts, completed } }
+  elements: {}
+};
+
+// ============================================================
+// DOM CACHE
+// ============================================================
+function cacheElements() {
+  state.elements = {
+    wordDisplay: document.getElementById("wordDisplay"),
+    wordTranslation: document.getElementById("wordTranslation"),
+    wordJyutping: document.getElementById("wordJyutping"),
+    categoryLabel: document.getElementById("categoryLabel"),
+    categoryButtons: document.querySelectorAll(".cat-btn"),
+    timeDisplay: document.getElementById("timeDisplay"),
+    inputDisplay: document.getElementById("inputDisplay"),
+    wpmDisplay: document.getElementById("wpmDisplay"),
+    correctDisplay: document.getElementById("correctDisplay"),
+    accuracyDisplay: document.getElementById("accuracyDisplay"),
+    progressFill: document.getElementById("progressFill"),
+    progressCurrent: document.getElementById("progressCurrent"),
+    progressTotal: document.getElementById("progressTotal"),
+    startOverlay: document.getElementById("startOverlay"),
+    resultOverlay: document.getElementById("resultOverlay"),
+    resultWpm: document.getElementById("resultWpm"),
+    resultAccuracy: document.getElementById("resultAccuracy"),
+    resultTime: document.getElementById("resultTime"),
+    resultWords: document.getElementById("resultWords"),
+    resultErrors: document.getElementById("resultErrors"),
+    btnRetry: document.getElementById("btnRetry"),
+    btnNewSet: document.getElementById("btnNewSet"),
+    hiddenInput: document.getElementById("hiddenInput")
+  };
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function formatTime(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.floor(totalSeconds % 60);
+  return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// WORD STATS (localStorage)
+// ============================================================
+function loadWordStats() {
+  try {
+    const raw = localStorage.getItem("typing_word_stats");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveWordStats() {
+  try {
+    localStorage.setItem("typing_word_stats", JSON.stringify(state.wordStats));
+  } catch (e) { /* quota exceeded, ignore */ }
+}
+
+function recordAttempt(word) {
+  const key = word.en.toLowerCase();
+  if (!state.wordStats[key]) {
+    state.wordStats[key] = { attempts: 0, completed: 0 };
+  }
+  state.wordStats[key].attempts++;
+  saveWordStats();
+}
+
+function recordCompletion(word) {
+  const key = word.en.toLowerCase();
+  if (!state.wordStats[key]) {
+    state.wordStats[key] = { attempts: 0, completed: 0 };
+  }
+  state.wordStats[key].completed++;
+  saveWordStats();
+}
+
+// ============================================================
+// SPACE-SKIPPING HELPERS
+// ============================================================
+function typableLength(word) {
+  return word.en.replace(/ /g, "").length;
+}
+
+function nthNonSpace(word, n) {
+  let count = 0;
+  for (let i = 0; i < word.en.length; i++) {
+    if (word.en[i] !== " ") {
+      if (count === n) return i;
+      count++;
+    }
+  }
+  return -1;
+}
+
+function nonSpaceCountBefore(word, wordIdx) {
+  let count = 0;
+  for (let i = 0; i < wordIdx; i++) {
+    if (word.en[i] !== " ") count++;
+  }
+  return count;
+}
+
+// ============================================================
+// SPEECH
+// ============================================================
+function speakEnglish(word) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word.en);
+  u.lang = "en-US";
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function speakCantonese(word) {
+  if (!window.speechSynthesis) return;
+  const voices = window.speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang.startsWith("zh-HK"));
+  if (yueVoice) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word.zh.replace(/\//g, " "));
+    u.voice = yueVoice;
+    u.lang = "zh-HK";
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  // Fallback: Google TTS
+  const audio = new Audio();
+  audio.src = "https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-HK&client=tw-ob&q=" + encodeURIComponent(word.zh);
+  audio.play().catch(() => {});
+}
+
+function speakWord(word) {
+  if (!state.soundEnabled) return;
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word.en);
+  u.lang = "en-US";
+  u.rate = 0.85;
+  u.onend = () => speakCantonese(word);
+  window.speechSynthesis.speak(u);
+}
+
+function toggleSound() {
+  state.soundEnabled = !state.soundEnabled;
+  const btn = document.getElementById("btnSound");
+  if (state.soundEnabled) {
+    btn.classList.remove("muted");
+    btn.textContent = "S";
+  } else {
+    btn.classList.add("muted");
+    btn.textContent = "S";
+  }
+}
+
+function getWordPool() {
+  if (state.currentCategory === "all") {
+    return [...wordBank.workplace, ...wordBank.daily];
+  }
+  return wordBank[state.currentCategory];
+}
+
+// ============================================================
+// WORD RENDERING
+// ============================================================
+function renderWord() {
+  const word = state.words[state.wordIndex];
+  if (!word) return;
+
+  state.elements.wordTranslation.textContent = word.zh;
+  state.elements.wordJyutping.textContent = word.jyut || "";
+  state.elements.wordJyutping.style.visibility = "visible";
+
+  const display = state.elements.wordDisplay;
+  display.innerHTML = "";
+  display.classList.remove("shake");
+
+  for (let i = 0; i < word.en.length; i++) {
+    const span = document.createElement("span");
+    span.textContent = word.en[i];
+    span.className = word.en[i] === " " ? "letter space" : "letter normal";
+    span.dataset.index = i;
+    display.appendChild(span);
+  }
+
+  updateProgress();
+  recordAttempt(word);
+  speakWord(word);
+}
+
+function updateLetterStates() {
+  const word = state.words[state.wordIndex];
+  const letters = state.elements.wordDisplay.querySelectorAll(".letter");
+
+  letters.forEach(span => {
+    const wordIdx = Number(span.dataset.index);
+    span.classList.remove("normal", "correct", "wrong", "space");
+
+    // Spaces are always neutral — skip typing logic
+    if (word.en[wordIdx] === " ") {
+      span.classList.add("space");
+      return;
+    }
+
+    const userIdx = nonSpaceCountBefore(word, wordIdx);
+
+    if (state.isWrong) {
+      if (userIdx < state.userInput.length) {
+        if (state.userInput[userIdx].toLowerCase() === word.en[wordIdx].toLowerCase()) {
+          span.classList.add("correct");
+        } else {
+          span.classList.add("wrong");
+        }
+      } else {
+        span.classList.add("normal");
+      }
+    } else if (userIdx < state.userInput.length) {
+      span.classList.add("correct");
+    } else {
+      span.classList.add("normal");
+    }
+  });
+}
+
+function updateProgress() {
+  const total = state.words.length;
+  const done = state.wordIndex;
+  const pct = total > 0 ? (done / total) * 100 : 0;
+
+  state.elements.progressFill.style.width = pct + "%";
+  state.elements.progressCurrent.textContent = done;
+  state.elements.progressTotal.textContent = total;
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const elapsed = state.startTime ? (Date.now() - state.startTime) / 1000 : 0;
+  const minutes = elapsed / 60;
+  const totalTyped = state.totalCorrect + state.totalErrors;
+
+  const wpm = minutes > 0 ? Math.round((state.totalCorrect / 5) / minutes) : 0;
+  const accuracy = totalTyped > 0 ? Math.round((state.totalCorrect / totalTyped) * 100) : 100;
+
+  state.elements.timeDisplay.textContent = formatTime(elapsed);
+  state.elements.inputDisplay.textContent = state.totalInputs;
+  state.elements.wpmDisplay.textContent = wpm;
+  state.elements.correctDisplay.textContent = state.totalCorrect;
+  state.elements.accuracyDisplay.textContent = accuracy + "%";
+}
+
+// ============================================================
+// WORD LOGIC
+// ============================================================
+function advanceWord() {
+  const completedWord = state.words[state.wordIndex];
+  state.wordIndex++;
+  state.userInput = "";
+
+  if (completedWord) recordCompletion(completedWord);
+
+  if (state.wordIndex >= state.words.length) {
+    finishSession();
+    return;
+  }
+
+  renderWord();
+  updateStats();
+  state.elements.hiddenInput.focus();
+}
+
+function handleWrongInput() {
+  state.isWrong = true;
+  updateLetterStates();
+
+  const display = state.elements.wordDisplay;
+  display.classList.add("shake");
+  setTimeout(() => display.classList.remove("shake"), 400);
+
+  // Clear and reset after delay (mimicking Qwerty Learner's 300ms delay)
+  state.wrongTimer = setTimeout(() => {
+    state.userInput = "";
+    state.isWrong = false;
+    renderWord();
+    state.elements.hiddenInput.focus();
+  }, 350);
+}
+
+function handleCorrectLetter() {
+  state.totalCorrect++;
+  updateLetterStates();
+
+  // Check if word is complete (all non-space characters typed)
+  const word = state.words[state.wordIndex];
+  if (state.userInput.length >= typableLength(word)) {
+    state.wordsCompleted++;
+    // Short pause then advance
+    setTimeout(() => advanceWord(), 150);
+  }
+}
+
+// ============================================================
+// SESSION CONTROL
+// ============================================================
+function startSession() {
+  state.elements.startOverlay.classList.add("hidden");
+  state.isStarted = true;
+  state.isComplete = false;
+  state.startTime = Date.now();
+  state.elements.hiddenInput.focus();
+  updateStats();
+}
+
+function finishSession() {
+  state.endTime = Date.now();
+  state.isComplete = true;
+  state.isStarted = false;
+  updateStats();
+  showResults();
+}
+
+function showResults() {
+  const elapsed = (state.endTime - state.startTime) / 1000;
+  const minutes = elapsed / 60;
+  const totalTyped = state.totalCorrect + state.totalErrors;
+  const wpm = minutes > 0 ? Math.round((state.totalCorrect / 5) / minutes) : 0;
+  const accuracy = totalTyped > 0 ? Math.round((state.totalCorrect / totalTyped) * 100) : 100;
+
+  state.elements.resultWpm.textContent = wpm;
+  state.elements.resultAccuracy.textContent = accuracy + "%";
+  state.elements.resultTime.textContent = formatTime(elapsed);
+  state.elements.resultWords.textContent = state.wordsCompleted;
+  state.elements.resultErrors.textContent = state.totalErrors;
+
+  state.elements.resultOverlay.classList.add("visible");
+}
+
+function hideResults() {
+  state.elements.resultOverlay.classList.remove("visible");
+}
+
+function resetSession(keepWords) {
+  hideResults();
+
+  if (state.wrongTimer) clearTimeout(state.wrongTimer);
+
+  if (!keepWords || state.words.length === 0) {
+    const pool = getWordPool();
+    state.words = shuffle(pool);
+    if (state.dailyCount > 0 && state.words.length > state.dailyCount) {
+      state.words = state.words.slice(0, state.dailyCount);
+    }
+  }
+
+  state.wordIndex = 0;
+  state.userInput = "";
+  state.totalInputs = 0;
+  state.totalCorrect = 0;
+  state.totalErrors = 0;
+  state.wordsCompleted = 0;
+  state.startTime = null;
+  state.endTime = null;
+  state.isStarted = false;
+  state.isComplete = false;
+  state.isWrong = false;
+
+  state.elements.startOverlay.classList.remove("hidden");
+  state.elements.resultOverlay.classList.remove("visible");
+  state.elements.wordDisplay.innerHTML = "";
+  state.elements.wordTranslation.textContent = "";
+  state.elements.wordJyutping.textContent = "";
+  updateStats();
+  renderWord();
+  updateProgress();
+  state.elements.hiddenInput.focus();
+}
+
+// ============================================================
+// INPUT HANDLING
+// ============================================================
+function handleKeydown(e) {
+  // Ignore if not started or complete
+  if (!state.isStarted || state.isComplete) return;
+
+  // Close word list on any typing key if open
+  if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
+    hideWordList();
+    state.elements.hiddenInput.focus();
+    return;
+  }
+
+  // Ignore if in wrong state (waiting for reset)
+  if (state.isWrong) return;
+
+  // Allow browser shortcuts
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  // Prevent default for all typing keys
+  e.preventDefault();
+
+  // Only handle printable characters
+  if (e.key.length !== 1) return;
+
+  const word = state.words[state.wordIndex];
+  if (!word) return;
+
+  // Don't accept more input than typable (non-space) characters
+  if (state.userInput.length >= typableLength(word)) return;
+
+  state.totalInputs++;
+  const userIdx = state.userInput.length;
+  state.userInput += e.key;
+  const wordIdx = nthNonSpace(word, userIdx);
+
+  if (e.key.toLowerCase() === word.en[wordIdx].toLowerCase()) {
+    handleCorrectLetter();
+  } else {
+    state.totalErrors++;
+    handleWrongInput();
+  }
+
+  updateStats();
+}
+
+// ============================================================
+// CATEGORY SWITCHING
+// ============================================================
+function switchCategory(category) {
+  if (state.currentCategory === category) return;
+  state.currentCategory = category;
+
+  state.elements.categoryButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.category === category);
+  });
+
+  const labels = { all: "// all words", workplace: "// workplace", daily: "// daily" };
+  state.elements.categoryLabel.textContent = labels[category] || "";
+
+  resetSession(false);
+}
+
+// ============================================================
+// WORD LIST PANEL
+// ============================================================
+let wordListSort = { field: "en", asc: true };
+
+function renderWordList() {
+  const tbody = document.getElementById("wordlistBody");
+  const empty = document.getElementById("wordlistEmpty");
+  const pool = getWordPool();
+
+  if (pool.length === 0) {
+    tbody.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  // Build rows with stats
+  let rows = pool.map(w => {
+    const key = w.en.toLowerCase();
+    const stats = state.wordStats[key] || { attempts: 0, completed: 0 };
+    const cat = wordBank.workplace.includes(w) ? "Workplace" : "Daily";
+    return { word: w, cat, attempts: stats.attempts, completed: stats.completed };
+  });
+
+  // Sort
+  const sf = wordListSort.field;
+  rows.sort((a, b) => {
+    let va, vb;
+    if (sf === "en") { va = a.word.en.toLowerCase(); vb = b.word.en.toLowerCase(); }
+    else if (sf === "zh") { va = a.word.zh; vb = b.word.zh; }
+    else if (sf === "cat") { va = a.cat; vb = b.cat; }
+    else { va = a[sf]; vb = b[sf]; }
+    if (va < vb) return wordListSort.asc ? -1 : 1;
+    if (va > vb) return wordListSort.asc ? 1 : -1;
+    return 0;
+  });
+
+  tbody.innerHTML = rows.map(r =>
+    `<tr>
+      <td>${r.word.en}</td>
+      <td class="wl-zh">${r.word.zh}</td>
+      <td>${r.cat}</td>
+      <td class="wl-count">${r.attempts}</td>
+      <td class="wl-count">${r.completed}</td>
+    </tr>`
+  ).join("");
+}
+
+function showWordList() {
+  renderWordList();
+  document.getElementById("wordlistOverlay").classList.add("visible");
+}
+
+function hideWordList() {
+  document.getElementById("wordlistOverlay").classList.remove("visible");
+}
+
+// ============================================================
+// THEMES
+// ============================================================
+const presetThemes = {
+  classic: {
+    name: "经典",
+    bg: "#08081a", surface: "#10102a", surfaceAlt: "#181840",
+    cyan: "#00f0ff", magenta: "#ff00e5", purple: "#a855f7",
+    green: "#00ff88", red: "#ff3366", amber: "#ffb800",
+    text: "#e0e0f0", muted: "#7878a8", border: "#252550",
+    glassBg: "rgba(8,8,26,0.8)", starOpacity: "1", scanlineOpacity: "1",
+  },
+  ink: {
+    name: "素黑",
+    bg: "#f2f2f2", surface: "#ffffff", surfaceAlt: "#e8e8e8",
+    cyan: "#2c2c2c", magenta: "#555555", purple: "#666666",
+    green: "#3a7a5c", red: "#cc4444", amber: "#b8860b",
+    text: "#1a1a1a", muted: "#777777", border: "#dddddd",
+    glassBg: "rgba(255,255,255,0.85)", starOpacity: "0.1", scanlineOpacity: "0.2",
+  },
+  white: {
+    name: "纯白",
+    bg: "#f8f9fa", surface: "#ffffff", surfaceAlt: "#f0f0f0",
+    cyan: "#3b6fb6", magenta: "#6b8ec4", purple: "#7b8fce",
+    green: "#3a9a6e", red: "#dd4444", amber: "#d4a017",
+    text: "#222222", muted: "#888888", border: "#e0e0e0",
+    glassBg: "rgba(255,255,255,0.88)", starOpacity: "0.08", scanlineOpacity: "0.15",
+  },
+  apricot: {
+    name: "暖杏",
+    bg: "#faf5ef", surface: "#fffaf5", surfaceAlt: "#f5ede3",
+    cyan: "#e07b5a", magenta: "#d4696a", purple: "#c08090",
+    green: "#6a9a7a", red: "#cc5544", amber: "#d4953a",
+    text: "#3a2a1a", muted: "#9a8a7a", border: "#e8ddd0",
+    glassBg: "rgba(255,250,245,0.85)", starOpacity: "0.1", scanlineOpacity: "0.2",
+  },
+  mint: {
+    name: "薄荷",
+    bg: "#f0f7f4", surface: "#f8fdfa", surfaceAlt: "#e8f2ec",
+    cyan: "#4a9a8a", magenta: "#5a9a8a", purple: "#6a8aaa",
+    green: "#3a8a5c", red: "#c06050", amber: "#b89440",
+    text: "#1a2a22", muted: "#7a8a80", border: "#d8e8e0",
+    glassBg: "rgba(248,253,250,0.85)", starOpacity: "0.08", scanlineOpacity: "0.15",
+  },
+  mist: {
+    name: "雾蓝",
+    bg: "#f2f4f8", surface: "#fafbfd", surfaceAlt: "#e8ecf4",
+    cyan: "#5a8ab8", magenta: "#7a8eb8", purple: "#8a8ec0",
+    green: "#5a9a7a", red: "#c06060", amber: "#c0a050",
+    text: "#1a2230", muted: "#7a8290", border: "#d8dde8",
+    glassBg: "rgba(250,251,253,0.85)", starOpacity: "0.08", scanlineOpacity: "0.15",
+  },
+};
+
+const themeOrder = ["classic", "ink", "white", "apricot", "mint", "mist"];
+let currentTheme = "classic";
+let customThemes = {};
+let themeStyleEl = null;
+
+function ensureThemeStyle() {
+  if (!themeStyleEl) {
+    themeStyleEl = document.createElement("style");
+    themeStyleEl.id = "theme-style";
+    document.head.appendChild(themeStyleEl);
+  }
+}
+
+function getTheme(key) {
+  if (presetThemes[key]) return presetThemes[key];
+  if (customThemes[key]) return customThemes[key];
+  return presetThemes["classic"];
+}
+
+function applyTheme(key) {
+  const t = getTheme(key);
+  if (!t) return;
+  currentTheme = key;
+
+  ensureThemeStyle();
+  themeStyleEl.textContent = ":root{" +
+    "--bg:" + t.bg + ";" +
+    "--surface:" + t.surface + ";" +
+    "--surface-alt:" + t.surfaceAlt + ";" +
+    "--neon-cyan:" + t.cyan + ";" +
+    "--neon-magenta:" + t.magenta + ";" +
+    "--neon-purple:" + t.purple + ";" +
+    "--neon-green:" + t.green + ";" +
+    "--neon-red:" + t.red + ";" +
+    "--neon-amber:" + t.amber + ";" +
+    "--text:" + t.text + ";" +
+    "--text-muted:" + t.muted + ";" +
+    "--border-subtle:" + t.border + ";" +
+    "--glass-bg:" + t.glassBg + ";" +
+    "--star-opacity:" + t.starOpacity + ";" +
+    "--scanline-opacity:" + t.scanlineOpacity + ";" +
+  "}";
+
+  document.querySelectorAll(".theme-dot").forEach(dot => {
+    dot.classList.toggle("active", dot.dataset.theme === key);
+  });
+
+  try { localStorage.setItem("typing_theme", key); } catch (e) {}
+}
+
+// HSL color utilities
+function hexToHsl(hex) {
+  let r, g, b;
+  hex = hex.replace("#", "");
+  if (hex.length === 3) {
+    r = parseInt(hex[0] + hex[0], 16) / 255;
+    g = parseInt(hex[1] + hex[1], 16) / 255;
+    b = parseInt(hex[2] + hex[2], 16) / 255;
+  } else {
+    r = parseInt(hex.substring(0, 2), 16) / 255;
+    g = parseInt(hex.substring(2, 4), 16) / 255;
+    b = parseInt(hex.substring(4, 6), 16) / 255;
+  }
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) / 6 :
+        max === g ? ((b - r) / d + 2) / 6 :
+                    ((r - g) / d + 4) / 6;
+  }
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    return Math.round(255 * (l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)))
+      .toString(16).padStart(2, "0");
+  };
+  return "#" + f(0) + f(8) + f(4);
+}
+
+function generateThemeFromColor(baseHex) {
+  const { h, s, l } = hexToHsl(baseHex);
+  const sat = Math.max(s, 45);
+  const accentLight = Math.max(l, 50);
+  const isLight = l > 55; // light accent → light theme, dark accent → dark theme
+
+  const t = {
+    name: "Custom",
+    cyan: baseHex,
+    magenta: hslToHex((h + 45) % 360, sat, accentLight),
+    purple: hslToHex((h + 80) % 360, sat, accentLight),
+    green: hslToHex((h + 140) % 360, sat, accentLight),
+    red: hslToHex((h + 190) % 360, sat, accentLight),
+    amber: hslToHex((h + 30) % 360, sat, Math.min(accentLight + 5, 90)),
+  };
+
+  if (isLight) {
+    t.bg = hslToHex(h, Math.round(sat * 0.12), 95);
+    t.surface = "#ffffff";
+    t.surfaceAlt = hslToHex(h, Math.round(sat * 0.15), 90);
+    t.text = hslToHex(h, 10, 15);
+    t.muted = hslToHex(h, 12, 48);
+    t.border = hslToHex(h, Math.round(sat * 0.18), 84);
+    t.glassBg = "rgba(255,255,255,0.88)";
+    t.starOpacity = "0.06";
+    t.scanlineOpacity = "0.12";
+  } else {
+    t.bg = hslToHex(h, Math.round(sat * 0.18), 5);
+    t.surface = hslToHex(h, Math.round(sat * 0.25), 9);
+    t.surfaceAlt = hslToHex(h, Math.round(sat * 0.3), 15);
+    t.text = hslToHex(h, 8, 90);
+    t.muted = hslToHex(h, 12, 50);
+    t.border = hslToHex(h, Math.round(sat * 0.22), 16);
+    t.glassBg = hslToHex(h, Math.round(sat * 0.2), 10) + "cc";
+    t.starOpacity = "1";
+    t.scanlineOpacity = "1";
+  }
+
+  return t;
+}
+
+function applyCustomColor(hex) {
+  const t = generateThemeFromColor(hex);
+  const key = "custom";
+  customThemes[key] = t;
+  applyTheme(key);
+  try { localStorage.setItem("typing_custom_theme", JSON.stringify(t)); } catch (e) {}
+  try { localStorage.setItem("typing_custom_hex", hex); } catch (e) {}
+}
+
+function cycleTheme() {
+  const idx = themeOrder.indexOf(currentTheme);
+  if (idx >= 0) {
+    applyTheme(themeOrder[(idx + 1) % themeOrder.length]);
+  } else {
+    applyTheme(themeOrder[0]);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  cacheElements();
+
+  // Load saved theme & custom themes
+  try {
+    const savedCustom = localStorage.getItem("typing_custom_theme");
+    if (savedCustom) customThemes["custom"] = JSON.parse(savedCustom);
+    const savedHex = localStorage.getItem("typing_custom_hex");
+    if (savedHex) document.getElementById("themeColorPicker").value = savedHex;
+    const saved = localStorage.getItem("typing_theme");
+    if (saved) applyTheme(saved);
+  } catch (e) {}
+
+  // Load persisted stats
+  state.wordStats = loadWordStats();
+
+  // Wire theme dots (preset quick-select)
+  document.querySelectorAll(".theme-dot:not(.theme-dot-picker)").forEach(dot => {
+    dot.addEventListener("click", (e) => {
+      e.stopPropagation();
+      applyTheme(dot.dataset.theme);
+    });
+  });
+
+  // Wire color picker
+  document.getElementById("themeColorPicker").addEventListener("input", (e) => {
+    e.stopPropagation();
+    applyCustomColor(e.target.value);
+  });
+
+  // Show count selector first
+  const pool = getWordPool();
+  document.getElementById("countTotal").textContent = pool.length;
+
+  let selectedCount = 30;
+  let isCustom = false;
+
+  document.querySelectorAll(".count-opt").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".count-opt").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const val = Number(btn.dataset.count);
+      if (val === -1) {
+        isCustom = true;
+        document.getElementById("countCustomWrap").style.display = "block";
+        document.getElementById("countCustomInput").focus();
+      } else {
+        isCustom = false;
+        document.getElementById("countCustomWrap").style.display = "none";
+        selectedCount = val;
+      }
+    });
+  });
+
+  document.getElementById("countCustomInput").addEventListener("input", () => {
+    selectedCount = Number(document.getElementById("countCustomInput").value) || 0;
+  });
+
+  document.getElementById("btnCountConfirm").addEventListener("click", () => {
+    if (isCustom) {
+      selectedCount = Number(document.getElementById("countCustomInput").value) || 0;
+    }
+    state.dailyCount = selectedCount;
+    let words = shuffle(pool);
+    if (selectedCount > 0) words = words.slice(0, selectedCount);
+    state.words = words;
+    state.elements.progressTotal.textContent = state.words.length;
+
+    document.getElementById("countOverlay").classList.add("hidden");
+    renderWord();
+    updateProgress();
+    updateStats();
+    state.elements.hiddenInput.focus();
+
+    finishInit();
+  });
+}
+
+function finishInit() {
+  // Category buttons
+  state.elements.categoryButtons.forEach(btn => {
+    btn.addEventListener("click", () => switchCategory(btn.dataset.category));
+  });
+
+  // Keyboard input
+  document.addEventListener("keydown", e => {
+    // Start session on any key press when not started
+    if (!state.isStarted && !state.isComplete && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      // Close word list if open
+      if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
+        hideWordList();
+        state.elements.hiddenInput.focus();
+        return;
+      }
+      e.preventDefault();
+      startSession();
+
+      // Also process this keystroke as input
+      const word = state.words[state.wordIndex];
+      if (!word) return;
+      state.totalInputs++;
+      state.userInput += e.key;
+      const firstCharIdx = nthNonSpace(word, 0);
+      if (e.key.toLowerCase() === word.en[firstCharIdx].toLowerCase()) {
+        handleCorrectLetter();
+      } else {
+        state.totalErrors++;
+        handleWrongInput();
+      }
+      updateStats();
+      return;
+    }
+
+    handleKeydown(e);
+  });
+
+  // Click on start overlay
+  state.elements.startOverlay.addEventListener("click", () => {
+    if (!state.isStarted) startSession();
+  });
+
+  // Hidden input
+  state.elements.hiddenInput.addEventListener("focus", () => {
+    state.elements.hiddenInput.value = "";
+  });
+  state.elements.hiddenInput.addEventListener("input", () => {
+    state.elements.hiddenInput.value = "";
+  });
+
+  // Result buttons
+  state.elements.btnRetry.addEventListener("click", () => resetSession(true));
+  state.elements.btnNewSet.addEventListener("click", () => resetSession(false));
+
+  // Click overlay backdrop
+  state.elements.resultOverlay.addEventListener("click", e => {
+    if (e.target === state.elements.resultOverlay) {
+      resetSession(false);
+    }
+  });
+
+  // Live timer
+  function timerTick() {
+    if (state.startTime && !state.isComplete) {
+      updateStats();
+    }
+    requestAnimationFrame(timerTick);
+  }
+  requestAnimationFrame(timerTick);
+
+  // Focus
+  state.elements.hiddenInput.focus();
+  document.addEventListener("click", () => {
+    // Don't steal focus when interacting with word list
+    if (document.getElementById("wordlistOverlay").classList.contains("visible")) return;
+    state.elements.hiddenInput.focus();
+  });
+
+  // Sound toggle
+  document.getElementById("btnSound").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleSound();
+  });
+
+  // Theme cycle (header T button)
+  document.getElementById("btnTheme").addEventListener("click", (e) => {
+    e.stopPropagation();
+    cycleTheme();
+  });
+
+  // Manual pronunciation buttons
+  document.getElementById("btnPronounceEn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const word = state.words[state.wordIndex];
+    if (word) speakEnglish(word);
+  });
+  document.getElementById("btnPronounceYue").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const word = state.words[state.wordIndex];
+    if (word) speakCantonese(word);
+  });
+
+  // Word list
+  document.getElementById("btnWordList").addEventListener("click", (e) => {
+    e.stopPropagation();
+    showWordList();
+  });
+  document.getElementById("btnWordlistClose").addEventListener("click", (e) => {
+    e.stopPropagation();
+    hideWordList();
+  });
+  document.getElementById("wordlistOverlay").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) hideWordList();
+  });
+
+  // Word list sorting
+  document.querySelectorAll(".wordlist-table th").forEach(th => {
+    th.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const field = th.dataset.sort;
+      if (wordListSort.field === field) {
+        wordListSort.asc = !wordListSort.asc;
+      } else {
+        wordListSort.field = field;
+        wordListSort.asc = true;
+      }
+      renderWordList();
+    });
+  });
+
+  // Escape closes word list
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
+        hideWordList();
+        state.elements.hiddenInput.focus();
+      } else if (state.isComplete) {
+        resetSession(false);
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>
