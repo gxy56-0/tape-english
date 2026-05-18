@@ -2443,6 +2443,8 @@ function resetSession(keepWords) {
   state.isStarted = false;
   state.isComplete = false;
   state.isWrong = false;
+  state.isStarted = true;
+  state.startTime = Date.now();
 
   state.elements.resultOverlay.classList.remove("visible");
   state.elements.wordDisplay.innerHTML = "";
