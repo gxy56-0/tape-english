@@ -199,7 +199,7 @@ body::after {
   letter-spacing: 1px;
   opacity: 0.9;
   text-align: center;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 20px rgba(160,180,220,0.25);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.35), 0 0 16px rgba(160,180,220,0.2);
 }
 .word-jyutping {
   font-size: 20px;
@@ -2845,6 +2845,8 @@ function init() {
     state.elements.progressTotal.textContent = state.words.length;
 
     document.getElementById("countOverlay").classList.add("hidden");
+    state.isStarted = true;
+    state.startTime = Date.now();
     renderWord();
     updateProgress();
     updateStats();
