@@ -1,0 +1,59 @@
+<!-- pages/result/result.wxml — Result page: stars + stats + history -->
+<view class="page" style="{{themeVars}}">
+  <view class="result-card">
+    <view class="title">// Complete</view>
+
+    <view class="star-rating">
+      <text wx:for="{{starArray}}" wx:key="*this"
+        class="{{item < stars ? 'star-filled' : 'star-empty'}}">★</text>
+    </view>
+    <view class="star-label">{{starLabel}}</view>
+
+    <view class="result-stats">
+      <view class="rs-item">
+        <text class="rs-val" style="color: var(--neon-cyan)">{{wpm}}</text>
+        <text class="rs-lbl">WPM</text>
+      </view>
+      <view class="rs-item">
+        <text class="rs-val" style="color: var(--neon-magenta)">{{accuracy}}%</text>
+        <text class="rs-lbl">Accuracy</text>
+      </view>
+    </view>
+
+    <view class="detail-grid">
+      <view class="dg-item">
+        <text class="dg-val">{{timeDisplay}}</text>
+        <text class="dg-lbl">Time</text>
+      </view>
+      <view class="dg-item">
+        <text class="dg-val">{{wordsCompleted}}</text>
+        <text class="dg-lbl">Words</text>
+      </view>
+      <view class="dg-item">
+        <text class="dg-val">{{totalErrors}}</text>
+        <text class="dg-lbl">Errors</text>
+      </view>
+    </view>
+
+    <view class="history">
+      <view class="history-title">// Recent Sessions</view>
+      <view wx:if="{{history.length === 0}}" class="history-empty">No history yet.</view>
+      <view wx:else>
+        <view wx:for="{{history}}" wx:key="index" class="history-row">
+          <text class="h-date">{{item.date.slice(5)}}</text>
+          <text class="h-stars">
+            <text wx:for="{{starArray}}" wx:for-item="s" wx:key="*this"
+              style="color: {{s < item.stars ? 'var(--neon-amber)' : 'var(--border-subtle)'}}">★</text>
+          </text>
+          <text class="h-wpm">{{item.wpm}} wpm</text>
+          <text class="h-acc">{{item.accuracy}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="result-buttons">
+      <button class="btn btn-primary" bindtap="onRetry">Retry</button>
+      <button class="btn btn-secondary" bindtap="onNewWords">New Words</button>
+    </view>
+  </view>
+</view>

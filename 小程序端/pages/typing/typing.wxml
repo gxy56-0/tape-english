@@ -1,0 +1,76 @@
+<!-- pages/typing/typing.wxml — Typing game page -->
+<view class="page" style="{{themeVars}}">
+  <!-- Word area -->
+  <view class="word-area">
+    <text class="word-zh">{{currentWord.zh || ''}}</text>
+    <text class="word-jyut">{{currentWord.jyut || ''}}</text>
+
+    <view class="word-frame {{frameFlash}}">
+      <view class="word-display {{isWrong ? 'shake' : ''}}">
+        <block wx:for="{{wordLetters}}" wx:key="index">
+          <text class="letter
+            {{item.isSpace ? 'letter-space' : ''}}
+            {{item.isSkip ? 'letter-skip' : ''}}
+            {{item.state === 'correct' ? 'letter-correct' : ''}}
+            {{item.state === 'wrong' ? 'letter-wrong' : ''}}
+            {{item.state === 'normal' ? 'letter-normal' : ''}}"
+          >{{item.char}}</text>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- EN / 粤 buttons -->
+  <view class="pronounce-row">
+    <button class="pron-btn" bindtap="onTapEn">EN</button>
+    <button class="pron-btn" bindtap="onTapYue">粤</button>
+  </view>
+
+  <!-- Progress bar -->
+  <view class="progress-wrap">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progressPct}}%"></view>
+    </view>
+    <view class="progress-text">
+      <text>{{wordIndex}}</text>
+      <text>{{totalWords}}</text>
+    </view>
+  </view>
+
+  <!-- Stats bar -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <text class="stat-value" style="color: var(--neon-cyan)">{{timeDisplay}}</text>
+      <text class="stat-label">Time</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: var(--neon-magenta)">{{totalInputs}}</text>
+      <text class="stat-label">Inputs</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: var(--neon-amber)">{{wpm}}</text>
+      <text class="stat-label">WPM</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: var(--neon-green)">{{totalCorrect}}</text>
+      <text class="stat-label">Correct</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: var(--neon-purple)">{{accuracy}}%</text>
+      <text class="stat-label">Accuracy</text>
+    </view>
+  </view>
+
+  <!-- Transparent input overlay -->
+  <view class="input-overlay">
+    <input
+      class="typing-input"
+      type="text"
+      value="{{inputValue}}"
+      bindinput="onInput"
+      focus="{{inputFocus}}"
+      maxlength="{{maxInputLen}}"
+      adjust-position="{{false}}"
+    />
+  </view>
+</view>

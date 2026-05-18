@@ -1,0 +1,26 @@
+/* app.wxss — Global base styles */
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg, #08081a);
+  color: var(--text, #e0e0f0);
+}
+
+/* Default CSS variables (classic dark theme fallback) */
+page {
+  --bg: #08081a;
+  --surface: #10102a;
+  --surface-alt: #181840;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff00e5;
+  --neon-purple: #a855f7;
+  --neon-green: #00ff88;
+  --neon-red: #ff3366;
+  --neon-amber: #ffb800;
+  --text: #e0e0f0;
+  --text-muted: #7878a8;
+  --border-subtle: #252550;
+  --glass-bg: rgba(8,8,26,0.8);
+  --star-opacity: 1;
+  --scanline-opacity: 1;
+}

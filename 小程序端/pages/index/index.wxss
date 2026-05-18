@@ -1,0 +1,115 @@
+/* pages/index/index.wxss */
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg, #08081a);
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.count-card {
+  background: var(--surface, #10102a);
+  border: 1px solid var(--border-subtle, #252550);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--neon-cyan, #00f0ff);
+  letter-spacing: 2px;
+  display: block;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--text-muted, #7878a8);
+  font-family: monospace;
+  margin-top: 8px;
+  margin-bottom: 32px;
+  display: block;
+}
+
+.count-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.count-opt {
+  padding: 14px 8px;
+  border: 1px solid var(--border-subtle, #252550);
+  color: var(--text, #e0e0f0);
+  font-size: 18px;
+  font-weight: 700;
+  font-family: monospace;
+  transition: all 0.2s;
+}
+
+.count-opt.active {
+  border-color: var(--neon-cyan, #00f0ff);
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--neon-cyan, #00f0ff);
+}
+
+.custom-wrap {
+  margin-bottom: 20px;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle, #252550);
+  background: var(--bg, #08081a);
+  color: var(--neon-cyan, #00f0ff);
+  font-size: 20px;
+  font-family: monospace;
+  text-align: center;
+}
+
+.theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.theme-label {
+  font-size: 11px;
+  color: var(--text-muted, #7878a8);
+  text-transform: uppercase;
+  font-family: monospace;
+}
+
+.theme-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.theme-dot.active {
+  border-color: #fff;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.btn-start {
+  padding: 14px 48px;
+  border: 1px solid var(--neon-cyan, #00f0ff);
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--neon-cyan, #00f0ff);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-family: monospace;
+  border-radius: 2px;
+}

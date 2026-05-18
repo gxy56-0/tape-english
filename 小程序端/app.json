@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/typing/typing",
+    "pages/result/result"
+  ],
+  "window": {
+    "navigationBarTitleText": "HK English Typing",
+    "navigationBarBackgroundColor": "#08081a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#08081a"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

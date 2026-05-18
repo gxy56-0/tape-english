@@ -1,0 +1,50 @@
+<!-- pages/index/index.wxml — Home page: count selector + theme picker -->
+<view class="page" style="{{themeVars}}">
+  <view class="count-card">
+    <view class="title">// Words Today</view>
+    <view class="subtitle">Total: {{totalWords}} words available</view>
+
+    <view class="count-options">
+      <view
+        class="count-opt {{selectedCount === 10 ? 'active' : ''}}"
+        bindtap="selectCount"
+        data-count="10">10</view>
+      <view
+        class="count-opt {{selectedCount === 30 ? 'active' : ''}}"
+        bindtap="selectCount"
+        data-count="30">30</view>
+      <view
+        class="count-opt {{selectedCount === 50 ? 'active' : ''}}"
+        bindtap="selectCount"
+        data-count="50">50</view>
+      <view
+        class="count-opt {{isCustom ? 'active' : ''}}"
+        bindtap="enableCustom">Custom</view>
+    </view>
+
+    <view class="custom-wrap" wx:if="{{isCustom}}">
+      <input
+        class="custom-input"
+        type="number"
+        placeholder="Enter number"
+        bindinput="onCustomInput"
+        value="{{customCount}}"
+        focus="{{isCustom}}"
+      />
+    </view>
+
+    <view class="theme-row">
+      <text class="theme-label">Theme</text>
+      <view
+        wx:for="{{themeDots}}"
+        wx:key="key"
+        class="theme-dot {{currentTheme === item.key ? 'active' : ''}}"
+        style="background-color: {{item.color}}"
+        data-theme="{{item.key}}"
+        bindtap="selectTheme"
+      />
+    </view>
+
+    <button class="btn-start" bindtap="startTyping">Start</button>
+  </view>
+</view>
