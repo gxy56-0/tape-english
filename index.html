@@ -830,6 +830,107 @@ body::after {
 }
 
 /* ============================================================
+   REVIEW OVERLAY
+   ============================================================ */
+.review-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 310;
+  padding: 20px;
+}
+.review-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 32px 28px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+.review-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  text-align: center;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+.review-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--neon-purple);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.review-table th:hover {
+  color: var(--neon-cyan);
+}
+.review-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(37,37,80,0.4);
+  color: var(--text);
+}
+.review-table tr:hover td {
+  background: rgba(0,240,255,0.04);
+}
+.review-table .rv-zh {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.review-table .rv-err {
+  text-align: center;
+  color: var(--neon-red);
+  font-weight: 700;
+}
+.review-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  font-family: var(--font-mono);
+  transition: color 0.2s;
+}
+.review-close:hover {
+  color: var(--neon-red);
+}
+.review-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 640px) {
@@ -868,6 +969,7 @@ body::after {
     <button class="icon-btn" id="btnSound" title="Toggle sound">S</button>
     <button class="icon-btn" id="btnWordList" title="Word list">W</button>
     <button class="icon-btn" id="btnTheme" title="Change theme">T</button>
+	    <button class="icon-btn" id="btnReview" title="Review wrong words">R</button>
     <select class="sound-sel" id="soundSelect">
       <option value="" disabled selected>sound</option>
       <option value="mechanical">mechanical</option>
@@ -1000,6 +1102,26 @@ body::after {
       <button class="btn btn-primary" id="btnRetry">Retry</button>
       <button class="btn btn-secondary" id="btnNewSet">New Words</button>
     </div>
+  </div>
+</div>
+
+<!-- Review Overlay -->
+<div class="review-overlay" id="reviewOverlay">
+  <div class="review-card">
+    <button class="review-close" id="btnReviewClose">X</button>
+    <h2>// Review - Wrong Words</h2>
+    <table class="review-table">
+      <thead>
+        <tr>
+          <th data-sort="en">Word</th>
+          <th data-sort="zh">Translation</th>
+          <th data-sort="jyut">Jyutping</th>
+          <th data-sort="errors">Errors</th>
+        </tr>
+      </thead>
+      <tbody id="reviewBody"></tbody>
+    </table>
+    <div class="review-empty" id="reviewEmpty">No wrong words yet. Keep typing!</div>
   </div>
 </div>
 
@@ -1526,7 +1648,6 @@ const wordBank = {
     { en: "landlord", zh: "业主", jyut: "jip6 zyu2" },
     { en: "tenant", zh: "租客", jyut: "zou1 haak3" },
     { en: "deposit", zh: "按金", jyut: "on3 gam1" },
-    { en: "stamp duty", zh: "印花税", jyut: "jan3 faa1 seoi3" },
     { en: "mortgage loan", zh: "按揭贷款", jyut: "on3 kit3 taai3 fun2" },
     { en: "valuation report", zh: "估价报告", jyut: "gu2 gaa3 bou3 gou3" },
     { en: "deed of mutual covenant", zh: "公契", jyut: "gung1 kai3" },
@@ -1583,12 +1704,10 @@ const wordBank = {
     { en: "muggy", zh: "闷热", jyut: "mun6 jit6" },
     { en: "drizzle", zh: "毛毛雨", jyut: "mou4 mou4 jyu5" },
     { en: "downpour", zh: "倾盆大雨", jyut: "king1 pun4 daai6 jyu5" },
-    { en: "umbrella", zh: "遮", jyut: "ze1" },
     { en: "raincoat", zh: "雨衣", jyut: "jyu5 ji1" },
     { en: "wellies", zh: "水鞋", jyut: "seoi2 haai4" },
     { en: "temperature", zh: "温度", jyut: "wan1 dou6" },
     { en: "Celsius", zh: "摄氏度", jyut: "sip3 si6 dou6" },
-    { en: "forecast", zh: "天气预报", jyut: "tin1 hei3 jyu6 bou3" },
     { en: "observatory", zh: "天文台", jyut: "tin1 man4 toi4" },
     { en: "Lunar New Year", zh: "农历新年", jyut: "nung4 lik6 san1 nin4" },
     { en: "red packet", zh: "利是", jyut: "lei6 si6" },
@@ -1772,6 +1891,7 @@ const state = {
   soundEnabled: true,
   dailyCount: 0,       // 0 = all words
   wordStats: {},       // { wordKey: { attempts, completed } }
+  wrongWordCounts: {}, // { wordKey: errorCount }
   elements: {}
 };
 
@@ -2020,6 +2140,22 @@ function shuffle(arr) {
   return a;
 }
 
+function getLearningQueue(pool, dailyCount) {
+  const unlearned = pool.filter(w => {
+    const stats = state.wordStats[w.en.toLowerCase()];
+    return !stats || stats.completed === 0;
+  });
+  const learned = pool.filter(w => {
+    const stats = state.wordStats[w.en.toLowerCase()];
+    return stats && stats.completed > 0;
+  });
+  const result = [...shuffle(unlearned), ...shuffle(learned)];
+  if (dailyCount > 0 && result.length > dailyCount) {
+    return result.slice(0, dailyCount);
+  }
+  return result;
+}
+
 // ============================================================
 // WORD STATS (localStorage)
 // ============================================================
@@ -2036,6 +2172,26 @@ function saveWordStats() {
   try {
     localStorage.setItem("typing_word_stats", JSON.stringify(state.wordStats));
   } catch (e) { /* quota exceeded, ignore */ }
+}
+
+function loadWrongWords() {
+  try {
+    const raw = localStorage.getItem("typing_wrong_words");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+function saveWrongWords() {
+  try {
+    localStorage.setItem("typing_wrong_words", JSON.stringify(state.wrongWordCounts));
+  } catch (e) {}
+}
+
+function recordWrongWord(word) {
+  const key = word.en.toLowerCase();
+  if (!state.wrongWordCounts[key]) state.wrongWordCounts[key] = 0;
+  state.wrongWordCounts[key]++;
+  saveWrongWords();
 }
 
 function recordAttempt(word) {
@@ -2267,6 +2423,8 @@ function advanceWord() {
 
 function handleWrongInput() {
   state.isWrong = true;
+  const curWord = state.words[state.wordIndex];
+  if (curWord) recordWrongWord(curWord);
   updateLetterStates();
   playKeySound(false);
   flashFrame("wrong");
@@ -2426,10 +2584,7 @@ function resetSession(keepWords) {
 
   if (!keepWords || state.words.length === 0) {
     const pool = getWordPool();
-    state.words = shuffle(pool);
-    if (state.dailyCount > 0 && state.words.length > state.dailyCount) {
-      state.words = state.words.slice(0, state.dailyCount);
-    }
+    state.words = getLearningQueue(pool, state.dailyCount);
   }
 
   state.wordIndex = 0;
@@ -2776,6 +2931,74 @@ function cycleTheme() {
 }
 
 // ============================================================
+// REVIEW PANEL
+// ============================================================
+let reviewSort = { field: "errors", asc: false };
+
+function renderReviewList() {
+  const tbody = document.getElementById("reviewBody");
+  const empty = document.getElementById("reviewEmpty");
+  const pool = getWordPool();
+
+  // Build word lookup for zh/jyut
+  const wordLookup = {};
+  pool.forEach(w => { wordLookup[w.en.toLowerCase()] = w; });
+
+  // Build rows from wrongWordCounts
+  let rows = [];
+  for (const [key, count] of Object.entries(state.wrongWordCounts)) {
+    if (count === 0) continue;
+    const w = wordLookup[key];
+    rows.push({
+      en: w ? w.en : key,
+      zh: w ? w.zh : "—",
+      jyut: w ? (w.jyut || "") : "",
+      errors: count
+    });
+  }
+
+  if (rows.length === 0) {
+    tbody.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  // Sort
+  const sf = reviewSort.field;
+  rows.sort((a, b) => {
+    let va, vb;
+    if (sf === "en") { va = a.en.toLowerCase(); vb = b.en.toLowerCase(); }
+    else if (sf === "zh") { va = a.zh; vb = b.zh; }
+    else if (sf === "jyut") { va = a.jyut; vb = b.jyut; }
+    else { va = a[sf]; vb = b[sf]; }
+    if (va < vb) return reviewSort.asc ? -1 : 1;
+    if (va > vb) return reviewSort.asc ? 1 : -1;
+    return 0;
+  });
+
+  tbody.innerHTML = rows.map(r =>
+    `<tr>
+      <td>${r.en}</td>
+      <td class="rv-zh">${r.zh}</td>
+      <td class="rv-zh">${r.jyut}</td>
+      <td class="rv-err">${r.errors}</td>
+    </tr>`
+  ).join("");
+}
+
+function showReviewPanel() {
+  renderReviewList();
+  document.getElementById("reviewOverlay").classList.add("visible");
+}
+
+function hideReviewPanel() {
+  document.getElementById("reviewOverlay").classList.remove("visible");
+}
+
+// ============================================================
+// INIT
+// ============================================================// ============================================================
 // INIT
 // ============================================================
 function init() {
@@ -2793,6 +3016,7 @@ function init() {
 
   // Load persisted stats
   state.wordStats = loadWordStats();
+  state.wrongWordCounts = loadWrongWords();
 
   // Wire theme dots (preset quick-select)
   document.querySelectorAll(".theme-dot:not(.theme-dot-picker)").forEach(dot => {
@@ -2841,9 +3065,7 @@ function init() {
       selectedCount = Number(document.getElementById("countCustomInput").value) || 0;
     }
     state.dailyCount = selectedCount;
-    let words = shuffle(pool);
-    if (selectedCount > 0) words = words.slice(0, selectedCount);
-    state.words = words;
+    state.words = getLearningQueue(pool, selectedCount);
     state.elements.progressTotal.textContent = state.words.length;
 
     document.getElementById("countOverlay").classList.add("hidden");
@@ -2953,6 +3175,19 @@ function finishInit() {
     if (e.target === e.currentTarget) hideWordList();
   });
 
+  // Review panel
+  document.getElementById("btnReview").addEventListener("click", (e) => {
+    e.stopPropagation();
+    showReviewPanel();
+  });
+  document.getElementById("btnReviewClose").addEventListener("click", (e) => {
+    e.stopPropagation();
+    hideReviewPanel();
+  });
+  document.getElementById("reviewOverlay").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) hideReviewPanel();
+  });
+
   // Word list sorting
   document.querySelectorAll(".wordlist-table th").forEach(th => {
     th.addEventListener("click", (e) => {
@@ -2968,11 +3203,29 @@ function finishInit() {
     });
   });
 
-  // Escape closes word list (skip when interacting with form elements)
+  // Review sorting
+  document.querySelectorAll(".review-table th").forEach(th => {
+    th.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const field = th.dataset.sort;
+      if (reviewSort.field === field) {
+        reviewSort.asc = !reviewSort.asc;
+      } else {
+        reviewSort.field = field;
+        reviewSort.asc = true;
+      }
+      renderReviewList();
+    });
+  });
+
+  // Escape closes panels (skip when interacting with form elements)
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (document.activeElement && document.activeElement.tagName === "SELECT") return;
-      if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
+      if (document.getElementById("reviewOverlay").classList.contains("visible")) {
+        hideReviewPanel();
+        state.elements.hiddenInput.focus();
+      } else if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
         hideWordList();
         state.elements.hiddenInput.focus();
       } else if (state.isComplete) {
