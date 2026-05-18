@@ -192,23 +192,24 @@ body::after {
 
 /* Translation / hint above word */
 .word-translation {
-  font-size: 26px;
+  font-size: 34px;
   color: #d0d0f0;
   font-weight: 600;
-  min-height: 36px;
+  min-height: 44px;
   letter-spacing: 1px;
   opacity: 0.9;
   text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 20px rgba(160,180,220,0.25);
 }
 .word-jyutping {
-  font-size: 14px;
+  font-size: 20px;
   color: var(--neon-purple);
   font-family: var(--font-mono);
-  min-height: 20px;
+  min-height: 28px;
   letter-spacing: 0.5px;
-  opacity: 0.7;
+  opacity: 0.75;
   text-align: center;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* Word frame */
@@ -512,41 +513,6 @@ body::after {
 }
 
 /* ============================================================
-   START OVERLAY
-   ============================================================ */
-.start-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4,4,20,0.7);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  transition: opacity 0.4s ease;
-}
-.start-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.start-hint {
-  font-size: 22px;
-  color: var(--text);
-  font-family: var(--font-mono);
-  letter-spacing: 2px;
-  animation: hintPulse 2s ease-in-out infinite;
-  text-align: center;
-}
-.start-hint span {
-  color: var(--neon-cyan);
-  text-shadow: 0 0 10px var(--neon-cyan);
-}
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-/* ============================================================
    RESULT OVERLAY
    ============================================================ */
 .result-overlay {
@@ -593,11 +559,83 @@ body::after {
 .result-card h2 {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 28px;
+  margin-bottom: 8px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--neon-cyan);
   text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+
+/* Star rating */
+.star-rating {
+  font-size: 38px;
+  margin-bottom: 20px;
+  letter-spacing: 6px;
+  line-height: 1;
+  user-select: none;
+}
+.star-rating .star-filled {
+  color: var(--neon-amber);
+  text-shadow: 0 0 12px rgba(255,184,0,0.5);
+  animation: starPop 0.4s cubic-bezier(0.34,1.56,0.64,1) backwards;
+}
+.star-rating .star-filled:nth-child(1) { animation-delay: 0.1s; }
+.star-rating .star-filled:nth-child(2) { animation-delay: 0.25s; }
+.star-rating .star-filled:nth-child(3) { animation-delay: 0.4s; }
+.star-rating .star-empty {
+  color: var(--border-subtle);
+}
+@keyframes starPop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-stars-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: var(--font-mono);
+  margin-bottom: 16px;
+}
+
+/* Session history in result card */
+.session-history {
+  margin-top: 20px;
+  text-align: left;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 16px;
+}
+.session-history h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+.session-history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  border-bottom: 1px solid rgba(37,37,80,0.2);
+}
+.session-history-row .sh-date { flex: 0 0 80px; }
+.session-history-row .sh-stars { flex: 0 0 60px; text-align: center; }
+.session-history-row .sh-wpm { flex: 0 0 50px; text-align: right; color: var(--neon-cyan); }
+.session-history-row .sh-acc { flex: 0 0 50px; text-align: right; color: var(--neon-green); }
+.session-history-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 8px 0;
 }
 
 .result-stats {
@@ -802,8 +840,8 @@ body::after {
   }
   .header-title { font-size: 13px; }
   .word-display { font-size: 32px; letter-spacing: 2px; }
-  .word-translation { font-size: 18px; }
-  .word-jyutping { font-size: 12px; }
+  .word-translation { font-size: 22px; }
+  .word-jyutping { font-size: 16px; }
   .word-frame { padding: 12px 20px; }
   .pronounce-btn { padding: 5px 12px; font-size: 11px; }
   .sound-sel { font-size: 9px; padding: 4px 6px; }
@@ -815,7 +853,6 @@ body::after {
   .result-stat .rs-val { font-size: 32px; }
   .result-detail-grid { grid-template-columns: 1fr; }
   .result-buttons { flex-direction: column; }
-  .start-hint { font-size: 16px; }
 }
 </style>
 </head>
@@ -922,11 +959,6 @@ body::after {
   </div>
 </div>
 
-<!-- Start Overlay -->
-<div class="start-overlay" id="startOverlay">
-  <div class="start-hint">Press any <span>key</span> to start</div>
-</div>
-
 <!-- Hidden input -->
 <input type="text" class="hidden-input" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
@@ -934,6 +966,8 @@ body::after {
 <div class="result-overlay" id="resultOverlay">
   <div class="result-card">
     <h2>// Complete</h2>
+    <div class="star-rating" id="starRating"></div>
+    <div class="result-stars-label" id="starLabel"></div>
     <div class="result-stats">
       <div class="result-stat">
         <div class="rs-val" id="resultWpm">0</div>
@@ -957,6 +991,10 @@ body::after {
         <div class="rd-val" id="resultErrors">0</div>
         <div class="rd-lbl">Errors</div>
       </div>
+    </div>
+    <div class="session-history" id="sessionHistory">
+      <h3>// Recent Sessions</h3>
+      <div id="sessionHistoryContent" class="session-history-empty">No history yet.</div>
     </div>
     <div class="result-buttons">
       <button class="btn btn-primary" id="btnRetry">Retry</button>
@@ -1754,7 +1792,6 @@ function cacheElements() {
     progressFill: document.getElementById("progressFill"),
     progressCurrent: document.getElementById("progressCurrent"),
     progressTotal: document.getElementById("progressTotal"),
-    startOverlay: document.getElementById("startOverlay"),
     resultOverlay: document.getElementById("resultOverlay"),
     resultWpm: document.getElementById("resultWpm"),
     resultAccuracy: document.getElementById("resultAccuracy"),
@@ -2278,15 +2315,6 @@ function handleCorrectLetter() {
 // ============================================================
 // SESSION CONTROL
 // ============================================================
-function startSession() {
-  state.elements.startOverlay.classList.add("hidden");
-  state.isStarted = true;
-  state.isComplete = false;
-  state.startTime = Date.now();
-  state.elements.hiddenInput.focus();
-  updateStats();
-}
-
 function finishSession() {
   state.endTime = Date.now();
   state.isComplete = true;
@@ -2295,18 +2323,94 @@ function finishSession() {
   showResults();
 }
 
+function getStarRating(accuracy) {
+  if (accuracy >= 95) return 3;
+  if (accuracy >= 85) return 2;
+  if (accuracy >= 70) return 1;
+  return 0;
+}
+
+function renderStars(count) {
+  let html = "";
+  for (let i = 0; i < 3; i++) {
+    html += i < count
+      ? '<span class="star-filled">★</span>'
+      : '<span class="star-empty">★</span>';
+  }
+  return html;
+}
+
+function getStarLabel(count) {
+  const labels = ["Keep Practicing", "Good Effort", "Great Job", "Perfect"];
+  return labels[count] || "";
+}
+
+function saveSessionRecord(wpm, accuracy, wordsCompleted, stars) {
+  let history = [];
+  try {
+    const raw = localStorage.getItem("typing_session_history");
+    if (raw) history = JSON.parse(raw);
+  } catch (e) {}
+  history.unshift({
+    date: new Date().toISOString().slice(0, 10),
+    wpm: wpm,
+    accuracy: accuracy,
+    words: wordsCompleted,
+    stars: stars
+  });
+  if (history.length > 10) history = history.slice(0, 10);
+  try {
+    localStorage.setItem("typing_session_history", JSON.stringify(history));
+  } catch (e) {}
+}
+
+function renderSessionHistory() {
+  let history = [];
+  try {
+    const raw = localStorage.getItem("typing_session_history");
+    if (raw) history = JSON.parse(raw);
+  } catch (e) {}
+  const container = document.getElementById("sessionHistoryContent");
+  if (!container) return;
+  if (history.length === 0) {
+    container.className = "session-history-empty";
+    container.textContent = "No history yet.";
+    return;
+  }
+  container.className = "";
+  container.innerHTML = history.map(s =>
+    `<div class="session-history-row">
+      <span class="sh-date">${s.date.slice(5)}</span>
+      <span class="sh-stars">${renderStars(s.stars)}</span>
+      <span class="sh-wpm">${s.wpm} wpm</span>
+      <span class="sh-acc">${s.accuracy}%</span>
+    </div>`
+  ).join("");
+}
+
 function showResults() {
   const elapsed = (state.endTime - state.startTime) / 1000;
   const minutes = elapsed / 60;
   const totalTyped = state.totalCorrect + state.totalErrors;
   const wpm = minutes > 0 ? Math.round((state.totalCorrect / 5) / minutes) : 0;
   const accuracy = totalTyped > 0 ? Math.round((state.totalCorrect / totalTyped) * 100) : 100;
+  const stars = getStarRating(accuracy);
 
   state.elements.resultWpm.textContent = wpm;
   state.elements.resultAccuracy.textContent = accuracy + "%";
   state.elements.resultTime.textContent = formatTime(elapsed);
   state.elements.resultWords.textContent = state.wordsCompleted;
   state.elements.resultErrors.textContent = state.totalErrors;
+
+  // Star rating
+  const starEl = document.getElementById("starRating");
+  const starLabel = document.getElementById("starLabel");
+  if (starEl) starEl.innerHTML = renderStars(stars);
+  if (starLabel) starLabel.textContent = getStarLabel(stars);
+
+  // Session history
+  saveSessionRecord(wpm, accuracy, state.wordsCompleted, stars);
+  renderSessionHistory();
 
   state.elements.resultOverlay.classList.add("visible");
 }
@@ -2340,7 +2444,6 @@ function resetSession(keepWords) {
   state.isComplete = false;
   state.isWrong = false;
 
-  state.elements.startOverlay.classList.remove("hidden");
   state.elements.resultOverlay.classList.remove("visible");
   state.elements.wordDisplay.innerHTML = "";
   state.elements.wordTranslation.textContent = "";
@@ -2754,39 +2857,7 @@ function init() {
 function finishInit() {
   // Keyboard input
   document.addEventListener("keydown", e => {
-    // Start session on any key press when not started
-    if (!state.isStarted && !state.isComplete && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      // Close word list if open
-      if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
-        hideWordList();
-        state.elements.hiddenInput.focus();
-        return;
-      }
-      e.preventDefault();
-      startSession();
-
-      // Also process this keystroke as input
-      const word = state.words[state.wordIndex];
-      if (!word) return;
-      state.totalInputs++;
-      state.userInput += e.key;
-      const firstCharIdx = nthNonSpace(word, 0);
-      if (e.key.toLowerCase() === word.en[firstCharIdx].toLowerCase()) {
-        handleCorrectLetter();
-      } else {
-        state.totalErrors++;
-        handleWrongInput();
-      }
-      updateStats();
-      return;
-    }
-
     handleKeydown(e);
-  });
-
-  // Click on start overlay
-  state.elements.startOverlay.addEventListener("click", () => {
-    if (!state.isStarted) startSession();
   });
 
   // Hidden input
