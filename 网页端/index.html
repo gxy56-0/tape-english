@@ -6,7 +6,7 @@
 <title>HK English Typing Practice</title>
 <style>
 /* ============================================================
-   RESET & BASE
+   RESET & BASE — 重置样式 & 基础变量
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -43,7 +43,7 @@ body {
   position: relative;
 }
 
-/* === Starfield Background === */
+/* === Starfield Background — 星空背景 === */
 body::before {
   content: "";
   position: fixed;
@@ -69,7 +69,7 @@ body::before {
   100% { filter: brightness(1); }
 }
 
-/* === Scanline overlay === */
+/* === Scanline overlay — 扫描线覆层 === */
 body::after {
   content: "";
   position: fixed;
@@ -81,7 +81,7 @@ body::after {
 }
 
 /* ============================================================
-   HEADER
+   HEADER — 顶栏
    ============================================================ */
 .header {
   display: flex;
@@ -120,7 +120,7 @@ body::after {
   gap: 8px;
 }
 
-/* Sound & icon buttons */
+/* Sound /* Sound & icon buttons */ icon buttons — 音效和图标按钮 */
 .icon-btn {
   width: 36px;
   height: 36px;
@@ -144,7 +144,7 @@ body::after {
   text-decoration: line-through;
 }
 
-/* Sound selector dropdown */
+/* Sound selector dropdown — 音效下拉选择 */
 .sound-sel {
   padding: 5px 8px;
   border: 1px solid var(--border-subtle);
@@ -167,7 +167,7 @@ body::after {
 }
 
 /* ============================================================
-   MAIN CONTENT AREA
+   MAIN CONTENT AREA — 主内容区
    ============================================================ */
 .main {
   flex: 1;
@@ -180,7 +180,7 @@ body::after {
   padding: 20px;
 }
 
-/* === Word Display === */
+/* === Word Display — 单词显示区 === */
 .word-container {
   display: flex;
   flex-direction: column;
@@ -190,7 +190,7 @@ body::after {
   margin-bottom: 40px;
 }
 
-/* Translation / hint above word */
+/* Translation / hint above word — 中文翻译提示 */
 .word-translation {
   font-size: 34px;
   color: #d0d0f0;
@@ -212,7 +212,7 @@ body::after {
   margin-top: 4px;
 }
 
-/* Word frame */
+/* Word frame — 单词方框 */
 .word-frame {
   display: inline-flex;
   border: 2px solid var(--border-subtle);
@@ -229,7 +229,7 @@ body::after {
   box-shadow: 0 0 14px rgba(255,51,102,0.3);
 }
 
-/* The word itself */
+/* The word itself — 单词本体 */
 .word-display {
   display: flex;
   align-items: center;
@@ -252,7 +252,7 @@ body::after {
   80% { transform: translateX(4px); }
 }
 
-/* Individual letters */
+/* Individual letters — 单个字母 */
 .letter {
   display: inline;
   transition: color 0.1s ease;
@@ -263,7 +263,7 @@ body::after {
 .letter.space { width: 0.45em; display: inline-block; }
 .letter.skip { color: var(--text-muted); opacity: 0.6; }
 
-/* Pronunciation buttons */
+/* Pronunciation buttons — 发音按钮 */
 .pronounce-row {
   display: flex;
   justify-content: center;
@@ -288,7 +288,7 @@ body::after {
 }
 
 /* ============================================================
-   PROGRESS BAR
+   PROGRESS BAR — 进度条
    ============================================================ */
 .progress-wrap {
   width: 100%;
@@ -320,7 +320,7 @@ body::after {
 }
 
 /* ============================================================
-   STATS BAR (bottom)
+   STATS BAR (bottom) — 底部统计栏
    ============================================================ */
 .stats-bar {
   display: grid;
@@ -363,7 +363,7 @@ body::after {
 }
 
 /* ============================================================
-   COUNT SELECTOR OVERLAY
+   COUNT SELECTOR OVERLAY — 数量选择面板
    ============================================================ */
 .count-overlay {
   position: fixed;
@@ -513,7 +513,7 @@ body::after {
 }
 
 /* ============================================================
-   GUIDE OVERLAY
+   GUIDE OVERLAY — 新手引导面板
    ============================================================ */
 .guide-overlay {
   position: fixed;
@@ -638,7 +638,7 @@ body::after {
 }
 
 /* ============================================================
-   RESULT OVERLAY
+   RESULT OVERLAY — 结果面板
    ============================================================ */
 .result-overlay {
   position: fixed;
@@ -846,7 +846,7 @@ body::after {
 
 
 /* ============================================================
-   WORD LIST OVERLAY
+   WORD LIST OVERLAY — 词库列表面板
    ============================================================ */
 .wordlist-overlay {
   position: fixed;
@@ -945,7 +945,7 @@ body::after {
   font-size: 14px;
 }
 /* ============================================================
-   HIDDEN INPUT
+   HIDDEN INPUT — 隐藏输入框
    ============================================================ */
 .hidden-input {
   position: absolute;
@@ -955,7 +955,7 @@ body::after {
 }
 
 /* ============================================================
-   REVIEW OVERLAY
+   REVIEW OVERLAY — 错词复习面板
    ============================================================ */
 .review-overlay {
   position: fixed;
@@ -1056,7 +1056,7 @@ body::after {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE — 响应式适配
    ============================================================ */
 @media (max-width: 640px) {
   .header {
@@ -1327,7 +1327,7 @@ body::after {
 
 <script>
 // ============================================================
-// WORD BANK - HK English vocabulary with translations
+// WORD BANK — 词库数据，香港英语词汇（英文/中文释义/粤拼）
 // ============================================================
 const wordBank = {
   workplace: [
@@ -2050,32 +2050,32 @@ const wordBank = {
 };
 
 // ============================================================
-// STATE
+// STATE — 全局状态对象，存储当前会话所有数据
 // ============================================================
 const state = {
   currentCategory: "workplace",
-  words: [],           // current word list
-  wordIndex: 0,        // index in current list
-  userInput: "",       // characters typed for current word
-  totalInputs: 0,      // total keystrokes
-  totalCorrect: 0,     // total correct keystrokes
-  totalErrors: 0,      // total wrong keystrokes
-  wordsCompleted: 0,   // number of words successfully typed
+  words: [],           // current word list 当前单词列表
+  wordIndex: 0,        // index in current list 当前列表索引
+  userInput: "",       // characters typed for current word 当前单词已输入字符
+  totalInputs: 0,      // total keystrokes 总击键数
+  totalCorrect: 0,     // total correct keystrokes 总正确击键数
+  totalErrors: 0,      // total wrong keystrokes 总错误击键数
+  wordsCompleted: 0,   // number of words successfully typed 成功打完的单词数
   startTime: null,
   endTime: null,
   isStarted: false,
   isComplete: false,
-  isWrong: false,      // currently in error state (waiting to reset)
+  isWrong: false,      // currently in error state (waiting to reset) 当前处于错误状态，等待重置
   wrongTimer: null,
   soundEnabled: true,
-  dailyCount: 0,       // 0 = all words
-  wordStats: {},       // { wordKey: { attempts, completed } }
-  wrongWordCounts: {}, // { wordKey: errorCount }
+  dailyCount: 0,       // 0 = all words（0表示全部单词）
+  wordStats: {},       // { wordKey: { attempts, completed } } 单词学习统计
+  wrongWordCounts: {}, // { wordKey: errorCount } 错词错误次数
   elements: {}
 };
 
 // ============================================================
-// DOM CACHE
+// DOM CACHE — 缓存所有DOM元素引用
 // ============================================================
 function cacheElements() {
   state.elements = {
@@ -2167,7 +2167,7 @@ const soundPresets = {
     name: "复古打字机",
     correct: (ctx) => {
       const now = ctx.currentTime;
-      // Mechanical clack
+      // Mechanical clack — 机械咔嗒声
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "square";
@@ -2177,7 +2177,7 @@ const soundPresets = {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
       osc.connect(gain); gain.connect(ctx.destination);
       osc.start(now); osc.stop(now + 0.06);
-      // Metallic ring
+      // Metallic ring — 金属回响声
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
       osc2.type = "triangle";
@@ -2204,7 +2204,7 @@ const soundPresets = {
     name: "青轴",
     correct: (ctx) => {
       const now = ctx.currentTime;
-      // Sharp click
+      // Sharp click — 清脆点击声
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "square";
@@ -2214,7 +2214,7 @@ const soundPresets = {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
       osc.connect(gain); gain.connect(ctx.destination);
       osc.start(now); osc.stop(now + 0.03);
-      // Resonance ping
+      // Resonance ping — 共振鸣响
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
       osc2.type = "sine";
@@ -2241,7 +2241,7 @@ const soundPresets = {
     name: "游戏键盘",
     correct: (ctx) => {
       const now = ctx.currentTime;
-      // Deep thock
+      // Deep thock — 低沉"咚"声
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
@@ -2251,7 +2251,7 @@ const soundPresets = {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
       osc.connect(gain); gain.connect(ctx.destination);
       osc.start(now); osc.stop(now + 0.05);
-      // Subtle high layer
+      // Subtle high layer — 微妙高频层
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
       osc2.type = "triangle";
@@ -2303,7 +2303,7 @@ function flashFrame(type) {
 }
 
 // ============================================================
-// HELPERS
+// HELPERS — 通用工具函数
 // ============================================================
 function formatTime(totalSeconds) {
   const m = Math.floor(totalSeconds / 60);
@@ -2355,7 +2355,7 @@ function loadWordStats() {
 function saveWordStats() {
   try {
     localStorage.setItem("typing_word_stats", JSON.stringify(state.wordStats));
-  } catch (e) { /* quota exceeded, ignore */ }
+  } catch (e) { /* quota exceeded, ignore — 存储配额超限则忽略 */ }
 }
 
 function loadWrongWords() {
@@ -2397,9 +2397,9 @@ function recordCompletion(word) {
 }
 
 // ============================================================
-// SKIP-SYMBOL HELPERS — 空格和连字符在打字时自动跳过，用户不需要输入
-// typableLength: 单词中需要实际打字的字符数（排除空格/连字符）
-// nthNonSpace: 用户第 n 次按键对应单词中的实际位置（跳过空格/连字符）
+// SKIP-SYMBOL HELPERS — 空格/连字符自动跳过，用户不需要输入
+// typableLength — 单词需打字的字符数（排除空格/连字符）
+// nthNonSpace — 用户第n次按键对应单词中实际位置（跳过空格/连字符）
 // ============================================================
 function isSkipChar(c) {
   return c === " " || c === "-";
@@ -2464,7 +2464,7 @@ function speakCantonese(word) {
     window.speechSynthesis.speak(pendingUtterance);
     return;
   }
-  // Fallback: Google TTS
+  // Fallback: Google TTS — 系统粤语语音不可用时的降级方案
   const audio = new Audio();
   audio.src = "https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-HK&client=tw-ob&q=" + encodeURIComponent(word.zh);
   audio.play().catch(() => {});
@@ -2477,10 +2477,10 @@ function speakWord(word) {
   speechGeneration++;
   const gen = speechGeneration;
 
-  // Cancel any current speech, then wait 20ms for cancel to flush before speaking
+  // Cancel any current speech, then wait 20ms for cancel to flush before speaking — 取消当前语音，等待20ms让cancel生效后再朗读
   window.speechSynthesis.cancel();
   setTimeout(() => {
-    if (gen !== speechGeneration) return; // newer speakWord cancelled us
+    if (gen !== speechGeneration) return; // newer speakWord cancelled us — 已被更新的 speakWord 调用取消
     const u = new SpeechSynthesisUtterance(word.en);
     u.lang = "en-US";
     u.rate = 0.85;
@@ -2550,7 +2550,7 @@ function updateLetterStates() {
     const wordIdx = Number(span.dataset.index);
     span.classList.remove("normal", "correct", "wrong", "space", "skip");
 
-    // Spaces and hyphens are always neutral — skip typing logic
+    // Spaces and hyphens are always neutral — 空格和连字符始终为中性，跳过打字逻辑
     if (word.en[wordIdx] === " ") {
       span.classList.add("space");
       return;
@@ -2591,7 +2591,7 @@ function updateProgress() {
 }
 
 // ============================================================
-// STATS
+// STATS — 实时统计更新（时间/WPM/准确率/输入数）
 // ============================================================
 function updateStats() {
   const elapsed = state.startTime ? (Date.now() - state.startTime) / 1000 : 0;
@@ -2609,7 +2609,7 @@ function updateStats() {
 }
 
 // ============================================================
-// WORD LOGIC
+// WORD LOGIC — 单词推进、错误处理、正确字母处理
 // ============================================================
 function advanceWord() {
   const completedWord = state.words[state.wordIndex];
@@ -2640,7 +2640,7 @@ function handleWrongInput() {
   display.classList.add("shake");
   setTimeout(() => display.classList.remove("shake"), 400);
 
-  // Clear and reset after delay (mimicking Qwerty Learner's 300ms delay)
+  // Clear and reset after delay (mimicking Qwerty Learner's 300ms delay) — 错误后清空输入并重置
   state.wrongTimer = setTimeout(() => {
     state.userInput = "";
     state.isWrong = false;
@@ -2655,7 +2655,7 @@ function handleCorrectLetter() {
   playKeySound(true);
   flashFrame("correct");
 
-  // Check if word is complete (spaces skipped, hyphens optional)
+  // Check if word is complete (spaces skipped, hyphens optional) — 检查单词是否已打完
   const word = state.words[state.wordIndex];
   let wi = 0, ui = 0;
   while (wi < word.en.length) {
@@ -2666,7 +2666,7 @@ function handleCorrectLetter() {
     if (state.userInput[ui].toLowerCase() !== word.en[wi].toLowerCase()) break;
     wi++; ui++;
   }
-  // Check if all non-space chars covered
+  // Check if all non-space chars covered — 检查是否所有非空格字符已覆盖
   let remaining = false;
   for (let i = wi; i < word.en.length; i++) {
     if (word.en[i] !== " ") { remaining = true; break; }
@@ -2767,13 +2767,13 @@ function showResults() {
   state.elements.resultWords.textContent = state.wordsCompleted;
   state.elements.resultErrors.textContent = state.totalErrors;
 
-  // Star rating
+  // Star rating — 星级评价（根据准确率计算1-3星）
   const starEl = document.getElementById("starRating");
   const starLabel = document.getElementById("starLabel");
   if (starEl) starEl.innerHTML = renderStars(stars);
   if (starLabel) starLabel.textContent = getStarLabel(stars);
 
-  // Session history
+  // Session history — 保存本次会话记录到历史
   saveSessionRecord(wpm, accuracy, state.wordsCompleted, stars);
   renderSessionHistory();
 
@@ -2824,25 +2824,25 @@ function resetSession(keepWords) {
 // 打错后 350ms 抖动重置，打完一个词后 150ms 自动推进
 // ============================================================
 function handleKeydown(e) {
-  // Ignore if not started or complete
+  // Ignore if not started or complete — 未开始或已完成则忽略
   if (!state.isStarted || state.isComplete) return;
 
-  // Close word list on any typing key if open
+  // Close word list on any typing key if open — 打字时自动关闭词库面板
   if (document.getElementById("wordlistOverlay").classList.contains("visible")) {
     hideWordList();
     state.elements.hiddenInput.focus();
     return;
   }
 
-  // Ignore if in wrong state (waiting for reset)
+  // Ignore if in wrong state (waiting for reset) — 错误抖动期间忽略输入
   if (state.isWrong) return;
 
-  // Allow browser shortcuts
+  // Allow browser shortcuts — 允许 Ctrl/Meta/Alt 快捷键通过
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
   e.preventDefault();
 
-  // Handle backspace
+  // Handle backspace — 退格删除上一个已输入字符
   if (e.key === "Backspace") {
     if (state.userInput.length > 0) {
       state.userInput = state.userInput.slice(0, -1);
@@ -2853,7 +2853,7 @@ function handleKeydown(e) {
     return;
   }
 
-  // Only handle printable characters
+  // Only handle printable characters — 仅处理可打印单字符（字母/连字符）
   if (e.key.length !== 1) return;
 
   const word = state.words[state.wordIndex];
@@ -2864,9 +2864,9 @@ function handleKeydown(e) {
   state.userInput += e.key;
   const wordIdx = nthNonSpace(word, userIdx);
 
-  // Hyphen matching: user can type "-" or skip it
+  // Hyphen matching: user can type "-" or skip it — 连字符可打可不打
   if (e.key === "-") {
-    // Look for a hyphen between previous match and wordIdx
+    // Look for a hyphen between previous match and wordIdx — 在相邻字符间查找连字符
     const prevIdx = userIdx > 0 ? nthNonSpace(word, userIdx - 1) : -1;
     let found = false;
     for (let i = prevIdx + 1; i <= wordIdx && i < word.en.length; i++) {
@@ -2909,7 +2909,7 @@ function renderWordList() {
   }
   empty.style.display = "none";
 
-  // Build rows with stats
+  // Build rows with stats — 构建带统计数据的表格行
   let rows = pool.map(w => {
     const key = w.en.toLowerCase();
     const stats = state.wordStats[key] || { attempts: 0, completed: 0 };
@@ -2917,7 +2917,7 @@ function renderWordList() {
     return { word: w, cat, attempts: stats.attempts, completed: stats.completed };
   });
 
-  // Sort
+  // Sort — 按选定字段排序
   const sf = wordListSort.field;
   rows.sort((a, b) => {
     let va, vb;
@@ -3056,7 +3056,7 @@ function applyTheme(key) {
   try { localStorage.setItem("typing_theme", key); } catch (e) {}
 }
 
-// HSL color utilities
+// HSL color utilities — HSL颜色转换工具函数
 function hexToHsl(hex) {
   let r, g, b;
   hex = hex.replace("#", "");
@@ -3096,7 +3096,7 @@ function generateThemeFromColor(baseHex) {
   const { h, s, l } = hexToHsl(baseHex);
   const sat = Math.max(s, 45);
   const accentLight = Math.max(l, 50);
-  const isLight = l > 55; // light accent → light theme, dark accent → dark theme
+  const isLight = l > 55; // light accent → light theme, dark accent → dark theme （亮色主色调→浅色主题，暗色主色调→深色主题）
 
   const t = {
     name: "Custom",
@@ -3161,11 +3161,11 @@ function renderReviewList() {
   const empty = document.getElementById("reviewEmpty");
   const pool = getWordPool();
 
-  // Build word lookup for zh/jyut
+  // Build word lookup for zh/jyut — 构建英文→中文/粤拼的查找表
   const wordLookup = {};
   pool.forEach(w => { wordLookup[w.en.toLowerCase()] = w; });
 
-  // Build rows from wrongWordCounts
+  // Build rows from wrongWordCounts — 从错词记录构建表格行
   let rows = [];
   for (const [key, count] of Object.entries(state.wrongWordCounts)) {
     if (count === 0) continue;
@@ -3185,7 +3185,7 @@ function renderReviewList() {
   }
   empty.style.display = "none";
 
-  // Sort
+  // Sort — 按选定字段排序
   const sf = reviewSort.field;
   rows.sort((a, b) => {
     let va, vb;
@@ -3226,7 +3226,7 @@ function hideReviewPanel() {
 function init() {
   cacheElements();
 
-  // Load saved theme & custom themes
+  // Load saved theme & custom themes — 恢复保存的主题和自定义配色
   try {
     const savedCustom = localStorage.getItem("typing_custom_theme");
     if (savedCustom) customThemes["custom"] = JSON.parse(savedCustom);
@@ -3236,11 +3236,11 @@ function init() {
     if (saved) applyTheme(saved);
   } catch (e) {}
 
-  // Load persisted stats
+  // Load persisted stats — 恢复本地存储的学习统计数据
   state.wordStats = loadWordStats();
   state.wrongWordCounts = loadWrongWords();
 
-  // Wire theme dots (preset quick-select)
+  // Wire theme dots (preset quick-select) — 绑定预设主题快捷切换圆点
   document.querySelectorAll(".theme-dot:not(.theme-dot-picker)").forEach(dot => {
     dot.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -3248,17 +3248,17 @@ function init() {
     });
   });
 
-  // Wire color picker
+  // Wire color picker — 绑定HSL取色器输入事件
   document.getElementById("themeColorPicker").addEventListener("input", (e) => {
     e.stopPropagation();
     applyCustomColor(e.target.value);
   });
 
-  // Show count selector first (or guide for first-time users)
+  // Show count selector first (or guide for first-time users) — 先显示数量选择面板（首次用户显示引导）
   const guideOverlay = document.getElementById("guideOverlay");
   const countOverlay = document.getElementById("countOverlay");
 
-  // Expose dismiss function globally so onclick can reach it
+  // Expose dismiss function globally so onclick can reach it — 暴露关闭引导函数到全局供 onclick 调用
   window.dismissGuide = function() {
     guideOverlay.classList.add("hidden");
     countOverlay.classList.remove("hidden");
@@ -3266,7 +3266,7 @@ function init() {
   };
 
   if (!localStorage.getItem("typing_guide_dismissed")) {
-    // First-time user: show guide, hide count selector
+    // First-time user: show guide, hide count selector — 首次用户：显示引导弹窗，隐藏数量选择
     countOverlay.classList.add("hidden");
     guideOverlay.classList.remove("hidden");
   }
@@ -3325,7 +3325,7 @@ function finishInit() {
     handleKeydown(e);
   });
 
-  // Hidden input
+  // Hidden input — 隐藏输入框（接收键盘事件但不显示）
   state.elements.hiddenInput.addEventListener("focus", () => {
     state.elements.hiddenInput.value = "";
   });
@@ -3333,18 +3333,18 @@ function finishInit() {
     state.elements.hiddenInput.value = "";
   });
 
-  // Result buttons
+  // Result buttons — 结果面板按钮（重试/新组）
   state.elements.btnRetry.addEventListener("click", () => resetSession(true));
   state.elements.btnNewSet.addEventListener("click", () => resetSession(false));
 
-  // Click overlay backdrop
+  // Click overlay backdrop — 点击结果面板背景关闭
   state.elements.resultOverlay.addEventListener("click", e => {
     if (e.target === state.elements.resultOverlay) {
       resetSession(false);
     }
   });
 
-  // Live timer
+  // Live timer — 实时计时器（requestAnimationFrame 驱动）
   function timerTick() {
     if (state.startTime && !state.isComplete) {
       updateStats();
@@ -3353,34 +3353,34 @@ function finishInit() {
   }
   requestAnimationFrame(timerTick);
 
-  // Focus
+  // Focus — 保持隐藏输入框获取焦点以接收键盘事件
   state.elements.hiddenInput.focus();
   document.addEventListener("click", (e) => {
-    // Don't steal focus when interacting with word list or sound select
+    // Don't steal focus when interacting with word list or sound select — 词库/音效选择时不抢夺焦点
     if (document.getElementById("wordlistOverlay").classList.contains("visible")) return;
     if (e.target.closest && e.target.closest("#soundSelect")) return;
     state.elements.hiddenInput.focus();
   });
 
-  // Sound toggle
+  // Sound toggle — 音效开关按钮
   document.getElementById("btnSound").addEventListener("click", (e) => {
     e.stopPropagation();
     toggleSound();
   });
 
-  // Theme cycle (header T button)
+  // Theme cycle (header T button) — 主题循环切换按钮
   document.getElementById("btnTheme").addEventListener("click", (e) => {
     e.stopPropagation();
     cycleTheme();
   });
 
-  // Sound selector
+  // Sound selector — 音效下拉选择
   document.getElementById("soundSelect").addEventListener("change", (e) => {
     e.stopPropagation();
     currentSoundPreset = e.target.value;
     try { localStorage.setItem("typing_sound", currentSoundPreset); } catch (e) {}
   });
-  // Restore saved sound preference
+  // Restore saved sound preference — 恢复保存的音效偏好
   try {
     const savedSound = localStorage.getItem("typing_sound");
     if (savedSound && soundPresets[savedSound]) {
@@ -3389,7 +3389,7 @@ function finishInit() {
     }
   } catch (e) {}
 
-  // Manual pronunciation buttons
+  // Manual pronunciation buttons — 手动发音按钮（英语/粤语）
   document.getElementById("btnPronounceEn").addEventListener("click", (e) => {
     e.stopPropagation();
     const word = state.words[state.wordIndex];
@@ -3401,7 +3401,7 @@ function finishInit() {
     if (word) speakCantonese(word);
   });
 
-  // Word list
+  // Word list — 词库面板打开/关闭
   document.getElementById("btnWordList").addEventListener("click", (e) => {
     e.stopPropagation();
     showWordList();
@@ -3414,7 +3414,7 @@ function finishInit() {
     if (e.target === e.currentTarget) hideWordList();
   });
 
-  // Review panel
+  // Review panel — 错词复习面板打开/关闭
   document.getElementById("btnReview").addEventListener("click", (e) => {
     e.stopPropagation();
     showReviewPanel();
@@ -3427,7 +3427,7 @@ function finishInit() {
     if (e.target === e.currentTarget) hideReviewPanel();
   });
 
-  // Word list sorting
+  // Word list sorting — 词库表头点击排序
   document.querySelectorAll(".wordlist-table th").forEach(th => {
     th.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -3442,7 +3442,7 @@ function finishInit() {
     });
   });
 
-  // Review sorting
+  // Review sorting — 复习面板表头点击排序
   document.querySelectorAll(".review-table th").forEach(th => {
     th.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -3457,7 +3457,7 @@ function finishInit() {
     });
   });
 
-  // Escape closes panels (skip when interacting with form elements)
+  // Escape closes panels (skip when interacting with form elements) — ESC关闭面板（表单交互时跳过）
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (document.activeElement && document.activeElement.tagName === "SELECT") return;
@@ -3474,7 +3474,7 @@ function finishInit() {
   });
 }
 
-// Start app — DOM already ready since script runs at end of body
+// Start app — DOM already ready since script runs at end of body （启动应用，脚本位于body末尾，DOM已就绪）
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
