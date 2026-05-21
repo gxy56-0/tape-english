@@ -2104,7 +2104,8 @@ function cacheElements() {
 }
 
 // ============================================================
-// KEYBOARD SOUNDS (Web Audio API)
+// KEYBOARD SOUNDS — Web Audio API 合成5种机械键盘音效
+// correct() / wrong() 分别合成正确/错误提示音，通过振荡器频率和波形模拟
 // ============================================================
 let audioCtx = null;
 let currentSoundPreset = "mechanical";
@@ -2310,6 +2311,7 @@ function formatTime(totalSeconds) {
   return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
 }
 
+// Fisher-Yates shuffle — 随机打乱数组，用于学习队列随机化
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -2319,6 +2321,8 @@ function shuffle(arr) {
   return a;
 }
 
+// 学习队列：未掌握的单词(completed=0)置顶，已掌握的沉底，两组各自随机
+// 确保薄弱词汇优先出现，提高学习效率
 function getLearningQueue(pool, dailyCount) {
   const unlearned = pool.filter(w => {
     const stats = state.wordStats[w.en.toLowerCase()];
@@ -2336,7 +2340,8 @@ function getLearningQueue(pool, dailyCount) {
 }
 
 // ============================================================
-// WORD STATS (localStorage)
+// WORD STATS — localStorage 持久化学习进度和错词记录
+// 所有数据存储在用户本地浏览器中，不联网、不跨设备
 // ============================================================
 function loadWordStats() {
   try {
@@ -2392,7 +2397,9 @@ function recordCompletion(word) {
 }
 
 // ============================================================
-// SKIP-SYMBOL HELPERS (spaces and hyphens are optional)
+// SKIP-SYMBOL HELPERS — 空格和连字符在打字时自动跳过，用户不需要输入
+// typableLength: 单词中需要实际打字的字符数（排除空格/连字符）
+// nthNonSpace: 用户第 n 次按键对应单词中的实际位置（跳过空格/连字符）
 // ============================================================
 function isSkipChar(c) {
   return c === " " || c === "-";
@@ -2426,13 +2433,15 @@ function nonSpaceCountBefore(word, wordIdx) {
 }
 
 // ============================================================
-// SPEECH
+// SPEECH — Web Speech API 英语 + 粤语 TTS 发音
+// 英语朗读后自动链式调用粤语，手动 EN/粤 按钮可独立播放
 // ============================================================
 let speechGeneration = 0;
 
-// Store pending utterance to prevent GC before speak() fires
+// 保持 pending 引用防止 GC 在 speak() 触发前回收 utterance
 let pendingUtterance = null;
 
+// Web Speech API 英语朗读 (en-US)
 function speakEnglish(word) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -2497,7 +2506,8 @@ function getWordPool() {
 }
 
 // ============================================================
-// WORD RENDERING
+// WORD RENDERING — 渲染当前单词到页面
+// 将单词拆分为字母数组，空格/连字符渲染为特殊样式，其余字母初始化 normal 态
 // ============================================================
 function renderWord() {
   const word = state.words[state.wordIndex];
@@ -2663,7 +2673,7 @@ function handleCorrectLetter() {
 }
 
 // ============================================================
-// SESSION CONTROL
+// SESSION CONTROL — 一轮练习的结束、结果计算、星级评价、历史保存
 // ============================================================
 function finishSession() {
   state.endTime = Date.now();
@@ -2804,7 +2814,9 @@ function resetSession(keepWords) {
 }
 
 // ============================================================
-// INPUT HANDLING
+// INPUT HANDLING — 核心键盘输入逻辑
+// 字母逐字匹配（大小写不敏感），退格回退，空格/连字符自动跳过，
+// 打错后 350ms 抖动重置，打完一个词后 150ms 自动推进
 // ============================================================
 function handleKeydown(e) {
   // Ignore if not started or complete
@@ -2876,7 +2888,7 @@ function handleKeydown(e) {
 }
 
 // ============================================================
-// WORD LIST PANEL
+// WORD LIST PANEL — 显示全部词库，每词展示尝试/完成次数，支持点击表头排序
 // ============================================================
 let wordListSort = { field: "en", asc: true };
 
@@ -2934,7 +2946,9 @@ function hideWordList() {
 }
 
 // ============================================================
-// THEMES
+// THEMES — 6套预设主题 + HSL取色器自动配色系统
+// 通过动态注入 <style> 标签覆写 :root CSS 变量实现切换
+// 取色器根据亮度自动判断暗色/浅色模式，生成全套12色配色
 // ============================================================
 const presetThemes = {
   classic: {
@@ -3133,7 +3147,7 @@ function cycleTheme() {
 }
 
 // ============================================================
-// REVIEW PANEL
+// REVIEW PANEL — 错词复习面板，显示打错过的词和错误次数，默认按错误数降序排列
 // ============================================================
 let reviewSort = { field: "errors", asc: false };
 
@@ -3199,9 +3213,10 @@ function hideReviewPanel() {
 }
 
 // ============================================================
-// INIT
-// ============================================================// ============================================================
-// INIT
+// INIT — 应用启动入口
+// 1. 恢复主题/自定义配色/词库统计数据
+// 2. 首次用户显示引导弹窗，老用户直接显示数量选择面板
+// 3. START 确认后进入打字会话
 // ============================================================
 function init() {
   cacheElements();
@@ -3296,8 +3311,9 @@ function init() {
   });
 }
 
+// 打字会话开始后绑定所有交互事件：键盘输入、按钮、面板开关、计时器、发音
 function finishInit() {
-  // Keyboard input
+  // 全局键盘监听 — 核心打字循环入口
   document.addEventListener("keydown", e => {
     handleKeydown(e);
   });
@@ -3451,7 +3467,12 @@ function finishInit() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", init);
+// Start app — DOM already ready since script runs at end of body
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 </script>
 
 </body>
