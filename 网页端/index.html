@@ -1206,7 +1206,7 @@ body::after {
         </div>
       </div>
     </div>
-    <button class="guide-dismiss" id="btnGuideDismiss">Let's Go!</button>
+    <button class="guide-dismiss" id="btnGuideDismiss" onclick="dismissGuide()">Let's Go!</button>
   </div>
 </div>
 
@@ -3253,15 +3253,17 @@ function init() {
   const guideOverlay = document.getElementById("guideOverlay");
   const countOverlay = document.getElementById("countOverlay");
 
+  // Expose dismiss function globally so onclick can reach it
+  window.dismissGuide = function() {
+    guideOverlay.classList.add("hidden");
+    countOverlay.classList.remove("hidden");
+    localStorage.setItem("typing_guide_dismissed", "1");
+  };
+
   if (!localStorage.getItem("typing_guide_dismissed")) {
     // First-time user: show guide, hide count selector
     countOverlay.classList.add("hidden");
     guideOverlay.classList.remove("hidden");
-    document.getElementById("btnGuideDismiss").addEventListener("click", () => {
-      guideOverlay.classList.add("hidden");
-      countOverlay.classList.remove("hidden");
-      localStorage.setItem("typing_guide_dismissed", "1");
-    });
   }
 
   const pool = getWordPool();
