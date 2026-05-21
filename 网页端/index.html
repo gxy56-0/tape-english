@@ -513,6 +513,103 @@ body::after {
 }
 
 /* ============================================================
+   GUIDE OVERLAY
+   ============================================================ */
+.guide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,20,0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 160;
+  padding: 20px;
+}
+.guide-overlay.hidden {
+  display: none;
+}
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 40px 36px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+.guide-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+.guide-card .guide-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: 28px;
+}
+.guide-steps {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.guide-step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.guide-step-body {
+  flex: 1;
+}
+.guide-step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.guide-step-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.guide-dismiss {
+  padding: 12px 40px;
+  border: 1px solid var(--neon-cyan);
+  background: rgba(0,240,255,0.08);
+  color: var(--neon-cyan);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+}
+.guide-dismiss:hover {
+  background: rgba(0,240,255,0.2);
+  box-shadow: 0 0 20px rgba(0,240,255,0.2);
+}
+
+/* ============================================================
    RESULT OVERLAY
    ============================================================ */
 .result-overlay {
@@ -954,6 +1051,10 @@ body::after {
   .result-stat .rs-val { font-size: 32px; }
   .result-detail-grid { grid-template-columns: 1fr; }
   .result-buttons { flex-direction: column; }
+  .guide-card { padding: 28px 18px; }
+  .guide-card h2 { font-size: 16px; }
+  .guide-step { gap: 10px; }
+  .guide-step-desc { font-size: 10px; }
 }
 </style>
 </head>
@@ -1030,6 +1131,45 @@ body::after {
     <div class="stat-label">Accuracy</div>
   </div>
 </footer>
+
+<!-- Guide Overlay (first-time only) -->
+<div class="guide-overlay" id="guideOverlay">
+  <div class="guide-card">
+    <h2>// Getting Started</h2>
+    <div class="guide-subtitle">HK English Typing Practice</div>
+    <div class="guide-steps">
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body">
+          <div class="guide-step-title">Choose your goal</div>
+          <div class="guide-step-desc">Select how many words per round and pick a theme you like.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body">
+          <div class="guide-step-title">Start typing</div>
+          <div class="guide-step-desc">See the English word, type it with your keyboard. Upper/lower case both work. Press Backspace to undo.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body">
+          <div class="guide-step-title">Use the toolbar</div>
+          <div class="guide-step-desc"><b>S</b> = sound &nbsp; <b>W</b> = word list &nbsp; <b>T</b> = theme &nbsp; <b>R</b> = review mistakes</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body">
+          <div class="guide-step-title">Finish &amp; review</div>
+          <div class="guide-step-desc">Complete the round to see your WPM, accuracy, and star rating (1-3 stars).</div>
+        </div>
+      </div>
+    </div>
+    <button class="guide-dismiss" id="btnGuideDismiss">Got it</button>
+  </div>
+</div>
 
 <!-- Count Selector Overlay -->
 <div class="count-overlay" id="countOverlay">
@@ -3055,7 +3195,21 @@ function init() {
     applyCustomColor(e.target.value);
   });
 
-  // Show count selector first
+  // Show count selector first (or guide for first-time users)
+  const guideOverlay = document.getElementById("guideOverlay");
+  const countOverlay = document.getElementById("countOverlay");
+
+  if (!localStorage.getItem("typing_guide_dismissed")) {
+    // First-time user: show guide, hide count selector
+    countOverlay.classList.add("hidden");
+    guideOverlay.classList.remove("hidden");
+    document.getElementById("btnGuideDismiss").addEventListener("click", () => {
+      guideOverlay.classList.add("hidden");
+      countOverlay.classList.remove("hidden");
+      localStorage.setItem("typing_guide_dismissed", "1");
+    });
+  }
+
   const pool = getWordPool();
   document.getElementById("countTotal").textContent = pool.length;
 
