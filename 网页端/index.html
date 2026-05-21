@@ -2477,16 +2477,21 @@ function speakWord(word) {
   speechGeneration++;
   const gen = speechGeneration;
 
+  // Cancel any current speech, then wait 20ms for cancel to flush before speaking
   window.speechSynthesis.cancel();
-  pendingUtterance = new SpeechSynthesisUtterance(word.en);
-  pendingUtterance.lang = "en-US";
-  pendingUtterance.rate = 0.85;
-  pendingUtterance.onend = () => {
-    if (gen === speechGeneration) {
-      speakCantonese(word);
-    }
-  };
-  window.speechSynthesis.speak(pendingUtterance);
+  setTimeout(() => {
+    if (gen !== speechGeneration) return; // newer speakWord cancelled us
+    const u = new SpeechSynthesisUtterance(word.en);
+    u.lang = "en-US";
+    u.rate = 0.85;
+    u.onend = () => {
+      if (gen === speechGeneration) {
+        speakCantonese(word);
+      }
+    };
+    pendingUtterance = u;
+    window.speechSynthesis.speak(u);
+  }, 20);
 }
 
 function toggleSound() {
@@ -2668,7 +2673,7 @@ function handleCorrectLetter() {
   }
   if (!remaining) {
     state.wordsCompleted++;
-    setTimeout(() => advanceWord(), 150);
+    setTimeout(() => advanceWord(), 80);
   }
 }
 
