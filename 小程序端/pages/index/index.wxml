@@ -1,4 +1,4 @@
-<!-- pages/index/index.wxml — Home page: count selector + theme picker -->
+<!-- pages/index/index.wxml — Home: count selector, theme auto-follows system -->
 <view class="page" style="{{themeVars}}">
   <view class="count-card">
     <view class="title">// Words Today</view>
@@ -33,16 +33,10 @@
       />
     </view>
 
-    <view class="theme-row">
-      <text class="theme-label">Theme</text>
-      <view
-        wx:for="{{themeDots}}"
-        wx:key="key"
-        class="theme-dot {{currentTheme === item.key ? 'active' : ''}}"
-        style="background-color: {{item.color}}"
-        data-theme="{{item.key}}"
-        bindtap="selectTheme"
-      />
+    <view class="theme-info">
+      <text class="theme-label">Theme: </text>
+      <text class="theme-val">{{sysTheme === 'dark' ? 'Dark' : 'Light'}}</text>
+      <text class="theme-hint"> (follows system)</text>
     </view>
 
     <button class="btn-start" bindtap="startTyping">Start</button>

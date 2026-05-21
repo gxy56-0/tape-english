@@ -25,8 +25,8 @@ Page({
     }
 
     const history = app.globalData.sessionHistory || [];
-    const themeKey = app.globalData.currentTheme;
-    const theme = getTheme(themeKey, app.globalData.customTheme || {});
+    const themeKey = app.globalData.theme || "dark";
+    const theme = getTheme(themeKey);
 
     this.setData({
       themeVars: generateThemeStyleVars(theme),
@@ -39,6 +39,11 @@ Page({
       totalErrors: result.totalErrors,
       history: history,
     });
+  },
+
+  onThemeChanged(theme) {
+    const t = getTheme(theme);
+    this.setData({ themeVars: generateThemeStyleVars(t) });
   },
 
   onRetry() {

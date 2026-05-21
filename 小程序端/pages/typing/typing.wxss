@@ -1,10 +1,10 @@
-/* pages/typing/typing.wxss */
+/* pages/typing/typing.wxss — Adaptive rpx sizing */
 
 .page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--bg, #08081a);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
@@ -16,51 +16,51 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 20px;
+  gap: 12rpx;
+  padding: 40rpx;
 }
 
 .word-zh {
-  font-size: 34px;
-  color: var(--text, #e0e0f0);
+  font-size: 64rpx;
+  color: var(--text);
   font-weight: 600;
   text-align: center;
-  min-height: 44px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.35), 0 0 16px rgba(160,180,220,0.2);
+  min-height: 80rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.35), 0 0 32rpx rgba(160,180,220,0.2);
 }
 
 .word-jyut {
-  font-size: 20px;
-  color: var(--neon-purple, #a855f7);
+  font-size: 36rpx;
+  color: var(--neon-purple);
   font-family: monospace;
-  min-height: 28px;
+  min-height: 52rpx;
   opacity: 0.75;
 }
 
 .word-frame {
-  border: 2px solid var(--border-subtle, #252550);
-  padding: 20px 36px;
-  border-radius: 6px;
+  border: 2px solid var(--border-subtle);
+  padding: 36rpx 64rpx;
+  border-radius: 12rpx;
   transition: border-color 0.12s, box-shadow 0.12s;
 }
 
 .word-frame.correct-flash {
-  border-color: var(--neon-green, #00ff88);
-  box-shadow: 0 0 18px rgba(0,255,136,0.3);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 36rpx rgba(0,255,136,0.3);
 }
 
 .word-frame.wrong-flash {
-  border-color: var(--neon-red, #ff3366);
-  box-shadow: 0 0 14px rgba(255,51,102,0.3);
+  border-color: var(--neon-red);
+  box-shadow: 0 0 28rpx rgba(255,51,102,0.3);
 }
 
 .word-display {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  font-size: 42px;
+  font-size: 72rpx;
   font-family: monospace;
-  letter-spacing: 3px;
+  letter-spacing: 6rpx;
   user-select: none;
 }
 
@@ -70,124 +70,103 @@
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(4px); }
+  20% { transform: translateX(-16rpx); }
+  40% { transform: translateX(16rpx); }
+  60% { transform: translateX(-12rpx); }
+  80% { transform: translateX(8rpx); }
 }
 
 .letter {
   transition: color 0.1s;
 }
 
-.letter-normal {
-  color: var(--text-muted, #7878a8);
-}
-
-.letter-correct {
-  color: var(--neon-green, #00ff88);
-  text-shadow: 0 0 8px rgba(0,255,136,0.5);
-}
-
-.letter-wrong {
-  color: var(--neon-red, #ff3366);
-  text-shadow: 0 0 8px rgba(255,51,102,0.5);
-}
-
-.letter-space {
-  width: 0.45em;
-  display: inline-block;
-}
-
-.letter-skip {
-  color: var(--text-muted, #7878a8);
-  opacity: 0.6;
-}
+.letter-normal { color: var(--text-muted); }
+.letter-correct { color: var(--neon-green); text-shadow: 0 0 16rpx rgba(0,255,136,0.5); }
+.letter-wrong   { color: var(--neon-red);   text-shadow: 0 0 16rpx rgba(255,51,102,0.5); }
+.letter-space   { width: 0.45em; display: inline-block; }
+.letter-skip    { color: var(--text-muted); opacity: 0.6; }
 
 /* === Pronunciation buttons === */
 .pronounce-row {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 24rpx;
+  margin-bottom: 28rpx;
 }
 
 .pron-btn {
-  padding: 8px 24px;
-  font-size: 14px;
+  padding: 16rpx 48rpx;
+  font-size: 28rpx;
   font-family: monospace;
-  border: 1px solid var(--border-subtle, #252550);
+  border: 1px solid var(--border-subtle);
   background: transparent;
-  color: var(--text-muted, #7878a8);
-  border-radius: 2px;
-  letter-spacing: 1px;
+  color: var(--text-muted);
+  border-radius: 4rpx;
+  letter-spacing: 2rpx;
 }
 
 /* === Progress bar === */
 .progress-wrap {
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto 20px;
-  padding: 0 24px;
+  max-width: 600rpx;
+  margin: 0 auto 32rpx;
+  padding: 0 40rpx;
   box-sizing: border-box;
 }
 
 .progress-bar {
   width: 100%;
-  height: 3px;
-  background: var(--border-subtle, #252550);
-  border-radius: 2px;
+  height: 6rpx;
+  background: var(--border-subtle);
+  border-radius: 4rpx;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--neon-cyan, #00f0ff), var(--neon-purple, #a855f7));
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
   transition: width 0.3s ease;
 }
 
 .progress-text {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
-  color: var(--text-muted, #7878a8);
+  font-size: 22rpx;
+  color: var(--text-muted);
   font-family: monospace;
-  margin-top: 6px;
+  margin-top: 12rpx;
 }
 
 /* === Stats bar === */
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  border-top: 1px solid var(--border-subtle, #252550);
-  background: var(--glass-bg, rgba(8,8,26,0.8));
+  border-top: 1px solid var(--border-subtle);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
 }
 
 .stat-item {
   text-align: center;
-  padding: 12px 2px;
-  border-left: 1px solid var(--border-subtle, #252550);
+  padding: 20rpx 4rpx;
+  border-left: 1px solid var(--border-subtle);
 }
+.stat-item:first-child { border-left: none; }
 
-.stat-item:first-child {
-  border-left: none;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 700;
-  font-family: monospace;
-  display: block;
-}
+.stat-value { font-size: 36rpx; font-weight: 700; font-family: monospace; display: block; }
+.c-cyan    { color: var(--neon-cyan);    text-shadow: 0 0 12rpx rgba(0,240,255,0.3); }
+.c-magenta { color: var(--neon-magenta);  text-shadow: 0 0 12rpx rgba(255,0,229,0.3); }
+.c-amber   { color: var(--neon-amber);   text-shadow: 0 0 12rpx rgba(255,184,0,0.3); }
+.c-green   { color: var(--neon-green);   text-shadow: 0 0 12rpx rgba(0,255,136,0.3); }
+.c-purple  { color: var(--neon-purple);  text-shadow: 0 0 12rpx rgba(168,85,247,0.3); }
 
 .stat-label {
-  font-size: 10px;
-  color: var(--text-muted, #7878a8);
+  font-size: 18rpx;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2rpx;
   font-family: monospace;
-  margin-top: 2px;
+  margin-top: 4rpx;
 }
 
 /* === Transparent input overlay === */

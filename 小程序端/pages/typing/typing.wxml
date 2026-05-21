@@ -1,4 +1,4 @@
-<!-- pages/typing/typing.wxml — Typing game page -->
+<!-- pages/typing/typing.wxml — Typing game, adaptive rpx -->
 <view class="page" style="{{themeVars}}">
   <!-- Word area -->
   <view class="word-area">
@@ -20,9 +20,9 @@
     </view>
   </view>
 
-  <!-- EN / 粤 buttons -->
+  <!-- EN / 粤 pronunciation buttons -->
   <view class="pronounce-row">
-    <button class="pron-btn" bindtap="onTapEn">EN</button>
+    <button class="pron-btn" bindtap="onTapEn">{{isSpeaking ? '...' : 'EN'}}</button>
     <button class="pron-btn" bindtap="onTapYue">粤</button>
   </view>
 
@@ -40,23 +40,23 @@
   <!-- Stats bar -->
   <view class="stats-bar">
     <view class="stat-item">
-      <text class="stat-value" style="color: var(--neon-cyan)">{{timeDisplay}}</text>
+      <text class="stat-value c-cyan">{{timeDisplay}}</text>
       <text class="stat-label">Time</text>
     </view>
     <view class="stat-item">
-      <text class="stat-value" style="color: var(--neon-magenta)">{{totalInputs}}</text>
+      <text class="stat-value c-magenta">{{totalInputs}}</text>
       <text class="stat-label">Inputs</text>
     </view>
     <view class="stat-item">
-      <text class="stat-value" style="color: var(--neon-amber)">{{wpm}}</text>
+      <text class="stat-value c-amber">{{wpm}}</text>
       <text class="stat-label">WPM</text>
     </view>
     <view class="stat-item">
-      <text class="stat-value" style="color: var(--neon-green)">{{totalCorrect}}</text>
+      <text class="stat-value c-green">{{totalCorrect}}</text>
       <text class="stat-label">Correct</text>
     </view>
     <view class="stat-item">
-      <text class="stat-value" style="color: var(--neon-purple)">{{accuracy}}%</text>
+      <text class="stat-value c-purple">{{accuracy}}%</text>
       <text class="stat-label">Accuracy</text>
     </view>
   </view>

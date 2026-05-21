@@ -1,5 +1,6 @@
-// pages/typing/typing.js — Main typing game logic
+// pages/typing/typing.js — Typing game with TTS pronunciation
 const app = getApp();
+const plugin = requirePlugin("WechatSI");
 const { getWordPool } = require("../../utils/wordbank");
 const { createSessionState } = require("../../utils/state");
 const { getLearningQueue } = require("../../utils/queue");
@@ -40,14 +41,17 @@ Page({
     // States
     isWrong: false,
     isComplete: false,
+
+    // TTS state
+    isSpeaking: false,
   },
 
-  // Internal state — not in data, avoids setData overhead
   _session: null,
   _words: [],
   _timerInterval: null,
   _wrongTimer: null,
   _flashTimer: null,
+  _audioCtx: null,
 
   onLoad() {
     const pool = getWordPool();
@@ -60,24 +64,98 @@ Page({
     this._session = session;
     this._words = words;
 
-    const themeKey = app.globalData.currentTheme;
-    const theme = getTheme(themeKey, app.globalData.customTheme || {});
+    const themeKey = app.globalData.theme || "dark";
+    const theme = getTheme(themeKey);
     this.setData({
       themeVars: generateThemeStyleVars(theme),
       totalWords: words.length,
     });
 
-    // Start immediately
     session.isStarted = true;
     session.startTime = Date.now();
     this.renderCurrentWord();
     this.startTimer();
+
+    // Auto-speak first word (English only, no chain on auto)
+    setTimeout(() => this.speakEnglish(false), 300);
   },
 
   onUnload() {
     this.stopTimer();
     if (this._wrongTimer) clearTimeout(this._wrongTimer);
     if (this._flashTimer) clearTimeout(this._flashTimer);
+    if (this._audioCtx) {
+      try { this._audioCtx.destroy(); } catch (e) {}
+      this._audioCtx = null;
+    }
+  },
+
+  onThemeChanged(theme) {
+    const t = getTheme(theme);
+    this.setData({ themeVars: generateThemeStyleVars(t) });
+  },
+
+  // ============================================================
+  // TTS PRONUNCIATION — fresh audio context per call
+  // ============================================================
+  _playTTS(lang, content, chainFn) {
+    if (!content || this.data.isComplete) return;
+    // Stop any currently playing audio
+    if (this._audioCtx) {
+      try { this._audioCtx.stop(); } catch (e) {}
+      try { this._audioCtx.destroy(); } catch (e) {}
+      this._audioCtx = null;
+    }
+
+    this.setData({ isSpeaking: true });
+
+    plugin.textToSpeech({
+      lang: lang,
+      tts: true,
+      content: content,
+      success: (res) => {
+        const ctx = wx.createInnerAudioContext();
+        this._audioCtx = ctx;
+        ctx.src = res.filename;
+        ctx.onEnded(() => {
+          this.setData({ isSpeaking: false });
+          try { ctx.destroy(); } catch (e) {}
+          this._audioCtx = null;
+          if (chainFn) chainFn();
+        });
+        ctx.onError(() => {
+          this.setData({ isSpeaking: false });
+          try { ctx.destroy(); } catch (e) {}
+          this._audioCtx = null;
+        });
+        ctx.play();
+      },
+      fail: () => {
+        this.setData({ isSpeaking: false });
+      }
+    });
+  },
+
+  speakEnglish(chain) {
+    const word = this._words[this._session.wordIndex];
+    if (!word) return;
+    const next = chain ? () => this.speakCantonese() : null;
+    this._playTTS("en_US", word.en, next);
+  },
+
+  speakCantonese() {
+    const word = this._words[this._session.wordIndex];
+    if (!word) return;
+    const text = word.zh.replace(/\s+/g, "");
+    this._playTTS("zh_HK", text, null);
+  },
+
+  onTapEn() {
+    this.speakEnglish(true);
+  },
+
+  onTapYue() {
+    this.speakCantonese();
   },
 
   // ============================================================
@@ -96,7 +174,7 @@ Page({
         char: ch,
         isSpace: ch === " ",
         isSkip: ch === "-",
-        state: (ch === " " || ch === "-") ? "normal" : "normal"
+        state: "normal"
       });
     }
 
@@ -115,12 +193,11 @@ Page({
         ? (this._session.wordIndex / this._words.length) * 100 : 0,
     });
 
-    // Keep keyboard focused
     this.setData({ inputFocus: true });
   },
 
   // ============================================================
-  // INPUT HANDLING — CORE LOGIC
+  // INPUT HANDLING
   // ============================================================
   onInput(e) {
     const session = this._session;
@@ -132,14 +209,12 @@ Page({
     const word = this._words[session.wordIndex];
     if (!word) return;
 
-    // Only process new characters (bindinput fires on every change)
     const prevLen = (session.userInput || "").length;
-    if (value.length <= prevLen) return; // deletion or no change, ignore
+    if (value.length <= prevLen) return;
     const newChars = value.slice(prevLen);
 
     const letters = this.data.wordLetters.map(l => ({ ...l }));
 
-    // Process each newly typed character (like the web app's keydown-per-char)
     for (let i = 0; i < newChars.length; i++) {
       const ch = newChars[i];
       const userIdx = prevLen + i;
@@ -147,7 +222,6 @@ Page({
 
       const wordIdx = nthNonSpace(word, userIdx);
 
-      // Hyphen matching: user can type "-" if word has one at this position
       if (ch === "-") {
         const prevWordIdx = userIdx > 0 ? nthNonSpace(word, userIdx - 1) : -1;
         let found = false;
@@ -167,7 +241,6 @@ Page({
           break;
         }
       } else if (wordIdx === -1 || ch.toLowerCase() !== word.en[wordIdx].toLowerCase()) {
-        // Wrong character
         session.totalErrors++;
         session.isWrong = true;
         recordWrongWord(app.globalData.wrongWordCounts, word);
@@ -175,7 +248,6 @@ Page({
         try { wx.vibrateShort({ type: "heavy" }); } catch (e) {}
         break;
       } else {
-        // Correct character
         session.totalCorrect++;
         letters[wordIdx].state = "correct";
         try { wx.vibrateShort({ type: "light" }); } catch (e) {}
@@ -185,7 +257,6 @@ Page({
     session.userInput = value;
 
     if (session.isWrong) {
-      // Wrong input: show error, reset after delay
       this.setData({
         wordLetters: letters,
         isWrong: true,
@@ -212,7 +283,6 @@ Page({
         });
       }, 350);
     } else {
-      // All good so far
       this.setData({
         wordLetters: letters,
         inputValue: value,
@@ -222,7 +292,6 @@ Page({
       });
       this.clearFlash();
 
-      // Check word completion: all non-space characters covered
       const tLen = typableLength(word);
       if (value.length >= tLen) {
         session.wordsCompleted++;
@@ -254,23 +323,9 @@ Page({
 
     this.renderCurrentWord();
     this.updateStats();
-  },
 
-  // ============================================================
-  // PRONUNCIATION (MVP: text toast)
-  // ============================================================
-  onTapEn() {
-    const word = this._words[this._session.wordIndex];
-    if (word) {
-      wx.showToast({ title: word.en, icon: "none", duration: 2000 });
-    }
-  },
-
-  onTapYue() {
-    const word = this._words[this._session.wordIndex];
-    if (word) {
-      wx.showToast({ title: word.zh, icon: "none", duration: 2000 });
-    }
+    // Auto-speak next word (English only)
+    setTimeout(() => this.speakEnglish(false), 200);
   },
 
   // ============================================================
@@ -317,6 +372,10 @@ Page({
     this.stopTimer();
     this.updateStats();
 
+    if (this._audioCtx) {
+      this._audioCtx.stop();
+    }
+
     const elapsed = (session.endTime - session.startTime) / 1000;
     const minutes = elapsed / 60;
     const totalTyped = session.totalCorrect + session.totalErrors;
@@ -324,7 +383,6 @@ Page({
     const accuracy = totalTyped > 0 ? Math.round((session.totalCorrect / totalTyped) * 100) : 100;
     const stars = getStarRating(accuracy);
 
-    // Save to history
     let history = [...(app.globalData.sessionHistory || [])];
     history.unshift({
       date: new Date().toISOString().slice(0, 10),

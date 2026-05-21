@@ -1,4 +1,4 @@
-<!-- pages/result/result.wxml — Result page: stars + stats + history -->
+<!-- pages/result/result.wxml — Result page, adaptive rpx -->
 <view class="page" style="{{themeVars}}">
   <view class="result-card">
     <view class="title">// Complete</view>

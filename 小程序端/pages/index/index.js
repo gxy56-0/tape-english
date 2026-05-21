@@ -1,4 +1,4 @@
-// pages/index/index.js — Home page
+// pages/index/index.js — Home: count selector, theme follows system
 const app = getApp();
 const { getWordPool } = require("../../utils/wordbank");
 const { generateThemeStyleVars, getTheme } = require("../../utils/theme");
@@ -10,38 +10,35 @@ Page({
     selectedCount: 30,
     isCustom: false,
     customCount: "",
-    currentTheme: "classic",
-    themeDots: [
-      { key: "classic", color: "#00f0ff" },
-      { key: "ink",     color: "#2c2c2c" },
-      { key: "white",   color: "#3b6fb6" },
-      { key: "apricot", color: "#e07b5a" },
-      { key: "mint",    color: "#4a9a8a" },
-      { key: "mist",    color: "#5a8ab8" },
-    ]
+    sysTheme: "dark",
   },
 
   onLoad() {
     const pool = getWordPool();
-    const themeKey = app.globalData.currentTheme;
-    const theme = getTheme(themeKey, app.globalData.customTheme || {});
+    const themeKey = app.globalData.theme || "dark";
+    this.applyTheme(themeKey);
     this.setData({
       totalWords: pool.length,
-      currentTheme: themeKey,
-      themeVars: generateThemeStyleVars(theme)
+      sysTheme: themeKey,
     });
   },
 
   onShow() {
-    // Refresh theme when coming back from typing
-    const themeKey = app.globalData.currentTheme;
-    if (this.data.currentTheme !== themeKey) {
-      const theme = getTheme(themeKey, app.globalData.customTheme || {});
-      this.setData({
-        currentTheme: themeKey,
-        themeVars: generateThemeStyleVars(theme)
-      });
+    const themeKey = app.globalData.theme || "dark";
+    if (this.data.sysTheme !== themeKey) {
+      this.applyTheme(themeKey);
+      this.setData({ sysTheme: themeKey });
     }
+  },
+
+  onThemeChanged(theme) {
+    this.applyTheme(theme);
+    this.setData({ sysTheme: theme });
+  },
+
+  applyTheme(key) {
+    const theme = getTheme(key);
+    this.setData({ themeVars: generateThemeStyleVars(theme) });
   },
 
   selectCount(e) {
@@ -57,23 +54,11 @@ Page({
     this.setData({ customCount: e.detail.value });
   },
 
-  selectTheme(e) {
-    const themeKey = e.currentTarget.dataset.theme;
-    const theme = getTheme(themeKey, app.globalData.customTheme || {});
-    app.globalData.currentTheme = themeKey;
-    try { wx.setStorageSync("typing_theme", themeKey); } catch (e) {}
-    this.setData({
-      currentTheme: themeKey,
-      themeVars: generateThemeStyleVars(theme)
-    });
-  },
-
   startTyping() {
     let dailyCount = this.data.isCustom
       ? Number(this.data.customCount) || 0
       : this.data.selectedCount;
     if (dailyCount <= 0) dailyCount = 0;
-
     app.globalData.dailyCount = dailyCount;
     wx.navigateTo({ url: "/pages/typing/typing" });
   }
