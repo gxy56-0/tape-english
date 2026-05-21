@@ -2249,13 +2249,18 @@ function nonSpaceCountBefore(word, wordIdx) {
 // ============================================================
 // SPEECH
 // ============================================================
+let speechGeneration = 0;
+
+// Store pending utterance to prevent GC before speak() fires
+let pendingUtterance = null;
+
 function speakEnglish(word) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(word.en);
-  u.lang = "en-US";
-  u.rate = 0.85;
-  window.speechSynthesis.speak(u);
+  pendingUtterance = new SpeechSynthesisUtterance(word.en);
+  pendingUtterance.lang = "en-US";
+  pendingUtterance.rate = 0.85;
+  window.speechSynthesis.speak(pendingUtterance);
 }
 
 function speakCantonese(word) {
@@ -2264,11 +2269,11 @@ function speakCantonese(word) {
   const yueVoice = voices.find(v => v.lang.startsWith("zh-HK"));
   if (yueVoice) {
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(word.zh.replace(/\//g, " "));
-    u.voice = yueVoice;
-    u.lang = "zh-HK";
-    u.rate = 0.9;
-    window.speechSynthesis.speak(u);
+    pendingUtterance = new SpeechSynthesisUtterance(word.zh.replace(/\//g, " "));
+    pendingUtterance.voice = yueVoice;
+    pendingUtterance.lang = "zh-HK";
+    pendingUtterance.rate = 0.9;
+    window.speechSynthesis.speak(pendingUtterance);
     return;
   }
   // Fallback: Google TTS
@@ -2280,12 +2285,20 @@ function speakCantonese(word) {
 function speakWord(word) {
   if (!state.soundEnabled) return;
   if (!window.speechSynthesis) return;
+
+  speechGeneration++;
+  const gen = speechGeneration;
+
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(word.en);
-  u.lang = "en-US";
-  u.rate = 0.85;
-  u.onend = () => speakCantonese(word);
-  window.speechSynthesis.speak(u);
+  pendingUtterance = new SpeechSynthesisUtterance(word.en);
+  pendingUtterance.lang = "en-US";
+  pendingUtterance.rate = 0.85;
+  pendingUtterance.onend = () => {
+    if (gen === speechGeneration) {
+      speakCantonese(word);
+    }
+  };
+  window.speechSynthesis.speak(pendingUtterance);
 }
 
 function toggleSound() {
@@ -2631,8 +2644,18 @@ function handleKeydown(e) {
   // Allow browser shortcuts
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-  // Prevent default for all typing keys
   e.preventDefault();
+
+  // Handle backspace
+  if (e.key === "Backspace") {
+    if (state.userInput.length > 0) {
+      state.userInput = state.userInput.slice(0, -1);
+      state.totalInputs++;
+      updateLetterStates();
+    }
+    updateStats();
+    return;
+  }
 
   // Only handle printable characters
   if (e.key.length !== 1) return;
